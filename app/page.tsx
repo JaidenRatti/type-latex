@@ -39,7 +39,7 @@ export default function Home() {
         </div>
 
         <footer className="mt-12 text-center text-gray-500 text-sm">
-          <p>© 2024 Type LaTeX. All rights reserved.</p>
+        <p>© 2024 <a href="https://github.com/JaidenRatti/type-latex" target="_blank">Type LaTeX</a>. All rights reserved.</p>
         </footer>
       </div>
     </main>
