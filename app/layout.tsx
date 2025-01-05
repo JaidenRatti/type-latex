@@ -1,6 +1,8 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Space_Grotesk, Fira_Code } from 'next/font/google'
+import { Analytics } from "@vercel/analytics/react"
+
 
 const spaceGrotesk = Space_Grotesk({ 
   subsets: ['latin'],
@@ -34,7 +36,9 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body className="font-sans">{children}</body>
+      <body className="font-sans">{children}
+      <Analytics />
+      </body>
     </html>
   )
 }
