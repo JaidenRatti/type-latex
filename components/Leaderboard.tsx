@@ -7,7 +7,7 @@ import { getLeaderboard } from '@/app/actions'
 import { LeaderboardEntry } from '@/types/game'
 import { cn } from '@/lib/utils'
 import { AlertCircle } from 'lucide-react'
-import { Alert, AlertDescription} from '@/components/ui/alert'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import Script from 'next/script'
 import { Button } from '@/components/ui/button'
 
@@ -77,8 +77,8 @@ export function Leaderboard() {
         </CardHeader>
         <CardContent className="space-y-4">
           <ul className="list-disc pl-5 space-y-2">
-            <li>Don`t know a symbol? Draw it using <a href="https://detexify.kirelabs.org/classify.html" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Detexify</a></li>
-            <li>Don`t use the $ symbol</li>
+            <li>Don't know a symbol? Draw it using <a href="https://detexify.kirelabs.org/classify.html" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Detexify</a></li>
+            <li>Don't use the $ symbol</li>
             <li>Use \not\in instead of \notin</li>
             <li>Use \pmod instead of \mod</li>
             <li>Use \mathbf instead of \textbf</li>
@@ -115,39 +115,34 @@ function LeaderboardTable({ entries, isLoading }: { entries: LeaderboardEntry[],
 
   return (
     <div className="relative overflow-x-auto">
-      <table className="w-full text-sm text-left">
-        <thead className="text-xs uppercase bg-muted">
-          <tr>
-            <th scope="col" className="px-6 py-3">Rank</th>
-            <th scope="col" className="px-6 py-3">Username</th>
-            <th scope="col" className="px-6 py-3">Points</th>
-            <th scope="col" className="px-6 py-3">Expressions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {entries.slice(0, 6).map((entry, index) => (
-            <tr 
-              key={entry.id} 
-              className={cn(
-                "border-b hover:bg-muted/50 transition-colors",
-                index < 3 ? "font-semibold" : ""
-              )}
-            >
-              <td className="px-6 py-4">{index + 1}</td>
-              <td className="px-6 py-4">{entry.username}</td>
-              <td className="px-6 py-4">{entry.points}</td>
-              <td className="px-6 py-4">{entry.expressions_completed}</td>
-            </tr>
-          ))}
-          {entries.length > 6 && (
+      <div className="max-h-[400px] overflow-y-auto">
+        <table className="w-full text-sm text-left">
+          <thead className="text-xs uppercase bg-muted sticky top-0">
             <tr>
-              <td colSpan={4} className="px-6 py-4 text-center text-sm text-muted-foreground">
-                Showing top 6 entries. There are {entries.length - 6} more entries.
-              </td>
+              <th scope="col" className="px-6 py-3">Rank</th>
+              <th scope="col" className="px-6 py-3">Username</th>
+              <th scope="col" className="px-6 py-3">Points</th>
+              <th scope="col" className="px-6 py-3">Expressions</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {entries.map((entry, index) => (
+              <tr 
+                key={entry.id} 
+                className={cn(
+                  "border-b hover:bg-muted/50 transition-colors",
+                  index < 3 ? "font-semibold" : ""
+                )}
+              >
+                <td className="px-6 py-4">{index + 1}</td>
+                <td className="px-6 py-4">{entry.username}</td>
+                <td className="px-6 py-4">{entry.points}</td>
+                <td className="px-6 py-4">{entry.expressions_completed}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   )
 }
