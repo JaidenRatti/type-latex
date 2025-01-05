@@ -11,9 +11,8 @@ import { submitScore } from '@/app/actions'
 import 'katex/dist/katex.min.css'
 import katex from 'katex'
 import { cn } from '@/lib/utils'
-import { Difficulty, GameScore } from '../../types/game'
+import { Difficulty } from '../../types/game'
 import { toast } from 'sonner'
-import { CheckIcon } from 'lucide-react'
 
 interface LatexTyperacerProps {
   onGameEnd: () => void;

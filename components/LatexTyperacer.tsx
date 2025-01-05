@@ -5,6 +5,7 @@ interface LatexTyperacerProps {
   onGameEnd: () => void;
 }
 
+
 export function LatexTyperacer({ onGameEnd }: LatexTyperacerProps) {
   const [showUsernameDialog, setShowUsernameDialog] = useState(false);
 

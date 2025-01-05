@@ -6,8 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { getLeaderboard } from '@/app/actions'
 import { LeaderboardEntry } from '@/types/game'
 import { cn } from '@/lib/utils'
-import { AlertCircle, Info } from 'lucide-react'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { AlertCircle } from 'lucide-react'
+import { Alert, AlertDescription} from '@/components/ui/alert'
 import Script from 'next/script'
 import { Button } from '@/components/ui/button'
 
@@ -77,8 +77,8 @@ export function Leaderboard() {
         </CardHeader>
         <CardContent className="space-y-4">
           <ul className="list-disc pl-5 space-y-2">
-            <li>Don't know a symbol? Draw it using <a href="https://detexify.kirelabs.org/classify.html" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Detexify</a></li>
-            <li>Don't use the $ symbol</li>
+            <li>Don`t know a symbol? Draw it using <a href="https://detexify.kirelabs.org/classify.html" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">Detexify</a></li>
+            <li>Don`t use the $ symbol</li>
             <li>Use \not\in instead of \notin</li>
             <li>Use \pmod instead of \mod</li>
             <li>Use \mathbf instead of \textbf</li>
