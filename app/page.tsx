@@ -18,7 +18,7 @@ export default function Home() {
         <header className="text-center mb-12">
           <div className="flex justify-center items-center mb-4">
             <MathIcon className="w-16 h-16 text-primary mr-4" />
-            <h1 className="text-4xl font-bold gradient-text">
+            <h1 className="text-4xl font-bold gradient-text font-heading">
               LaTeX Typing Practice
             </h1>
           </div>
@@ -29,11 +29,11 @@ export default function Home() {
 
         <div className="space-y-8">
           <section className="bg-white rounded-lg p-6 w-full">
-            <h2 className="text-2xl font-semibold text-primary mb-6">Practice Arena</h2>
+            <h2 className="text-2xl font-semibold text-primary mb-6 font-heading">Practice Arena</h2>
             <LatexTyperacer onGameEnd={handleGameEnd} />
           </section>
           <section className="bg-white rounded-lg p-6 w-full">
-            <h2 className="text-2xl font-semibold text-primary mb-6">Leaderboard</h2>
+            <h2 className="text-2xl font-semibold text-primary mb-6 font-heading">Leaderboard</h2>
             <Leaderboard key={leaderboardKey} />
           </section>
         </div>

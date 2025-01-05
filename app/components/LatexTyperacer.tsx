@@ -83,8 +83,8 @@ export function LatexTyperacer({ onGameEnd }: LatexTyperacerProps) {
   return (
     <Card className="w-full max-w-3xl mx-auto bg-white">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center gradient-text">Solo Mode</CardTitle>
-      </CardHeader>
+      <CardTitle className="text-2xl font-bold text-center gradient-text font-heading">Solo Mode</CardTitle>
+</CardHeader>
       <CardContent className="space-y-4">
         {!isGameActive && score.points === 0 && (
           <div className="space-y-6">

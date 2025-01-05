@@ -44,7 +44,7 @@ export function Leaderboard() {
     <div className="space-y-8">
       <Card className="w-full max-w-3xl mx-auto">
         <CardHeader className="flex justify-between items-center">
-          <CardTitle className="text-2xl font-bold">Leaderboard</CardTitle>
+          <CardTitle className="text-2xl font-bold font-heading">Leaderboard</CardTitle>
           <Button onClick={refreshLeaderboard} variant="outline" size="sm">
             Refresh
           </Button>
@@ -73,7 +73,7 @@ export function Leaderboard() {
 
       <Card className="w-full max-w-3xl mx-auto">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Tips</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center font-heading">Tips</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <ul className="list-disc pl-5 space-y-2">
