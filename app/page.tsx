@@ -19,11 +19,11 @@ export default function Home() {
           <div className="flex justify-center items-center mb-4">
             <MathIcon className="w-16 h-16 text-primary mr-4" />
             <h1 className="text-4xl font-bold gradient-text font-heading">
-              LaTeX Typing Practice
+              Type LaTeX
             </h1>
           </div>
           <p className="text-xl text-gray-600">
-            Master the art of the type!
+            Master the art of LaTeX!
           </p>
         </header>
 
