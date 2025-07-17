@@ -324,28 +324,142 @@ export function MultiplayerTyperacer({ onBackToMenu, initialRoomCode }: Multipla
     )
   }
 
-  // Countdown - CHECK THIS FIRST!
-  if (countdown !== null) {
-    console.log('🎯 Rendering countdown UI with value:', countdown, typeof countdown)
+
+
+  // Countdown OR Active Game - render together to avoid progress bar re-rendering
+  if (countdown !== null || (gameState.gameStarted && currentExpression && !gameState.gameFinished)) {
+    const isCountdown = countdown !== null
+    console.log(isCountdown ? '🎯 Rendering countdown UI' : 'Rendering: Active game')
+    
     return (
-      <div className="w-full max-w-4xl mx-auto">
-        <Card>
-          <CardContent className="p-16 text-center">
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold">Get Ready!</h2>
-              <div className="text-8xl font-bold text-blue-600 animate-pulse">
-                {countdown}
+      <div className="w-full max-w-6xl mx-auto space-y-6 transition-all duration-300 ease-in-out">
+        {/* Progress indicators - persistent across countdown and active game */}
+        <div className="grid md:grid-cols-2 gap-4">
+          <ProgressBar 
+            progress={isCountdown ? 0 : myProgress} 
+            playerName={playerName} 
+            isMe={true} 
+          />
+          <ProgressBar 
+            progress={isCountdown ? 0 : opponentProgress} 
+            playerName={gameState.opponent?.username || "Opponent"} 
+            isMe={false} 
+          />
+        </div>
+
+        {/* Countdown OR Active Game Content */}
+        {isCountdown ? (
+          <Card>
+            <CardContent className="p-16 text-center">
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold">Get Ready!</h2>
+                <div className="text-8xl font-bold text-blue-600 animate-pulse">
+                  {countdown}
+                </div>
+                <p className="text-muted-foreground">The race begins in...</p>
               </div>
-              <p className="text-muted-foreground">The race begins in...</p>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            {/* Game status */}
+            <Card>
+              <CardHeader className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Target className="w-6 h-6" />
+                    <span>Race to Finish!</span>
+                  </div>
+                  <div className="text-sm">
+                    Expression {gameState.currentExpressionIndex + 1} of {gameState.room?.expressions.length}
+                  </div>
+                </CardTitle>
+              </CardHeader>
+            </Card>
+
+            {/* Expression display */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-center">Target Expression</CardTitle>
+              </CardHeader>
+              <CardContent className={cn(
+                "p-8 text-center transition-all duration-300",
+                isCorrect && "bg-green-50 border-green-200"
+              )}>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: katex.renderToString(currentExpression!.latex, {
+                      throwOnError: false,
+                      displayMode: true
+                    })
+                  }}
+                />
+                <div className="absolute -left-[9999px] bg-white p-4">
+                  <div
+                    ref={targetRef}
+                    dangerouslySetInnerHTML={{
+                      __html: katex.renderToString(currentExpression!.latex, {
+                        throwOnError: false,
+                        displayMode: true
+                      })
+                    }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Input section */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-center">Your LaTeX Input</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Input
+                  ref={inputRef}
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                  placeholder="Type the LaTeX expression here..."
+                  className={cn(
+                    "w-full text-lg p-4 transition-all duration-200",
+                    isCorrect && "border-green-500 bg-green-50"
+                  )}
+                  autoFocus
+                  disabled={isCorrect}
+                />
+                
+                <Card className="bg-gray-50 border-dashed">
+                  <CardContent className="p-6 text-center min-h-[60px] flex items-center justify-center">
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: katex.renderToString(userInput || '\\phantom{x}', {
+                          throwOnError: false,
+                          displayMode: true
+                        })
+                      }}
+                    />
+                    <div className="absolute -left-[9999px] bg-white p-4">
+                      <div
+                        ref={userInputRef}
+                        dangerouslySetInnerHTML={{
+                          __html: katex.renderToString(userInput || '\\phantom{x}', {
+                            throwOnError: false,
+                            displayMode: true
+                          })
+                        }}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              </CardContent>
+            </Card>
+          </>
+        )}
       </div>
     )
   }
 
-  // Waiting room (also show if room status is waiting, regardless of other states)
-  if (gameState.room && (!gameState.gameStarted && !gameState.gameFinished || gameState.room.status === 'waiting')) {
+  // Waiting room - only when room status is waiting AND no countdown
+  if (gameState.room && gameState.room.status === 'waiting') {
     console.log('Rendering: Waiting room')
     return (
       <div className="w-full max-w-4xl mx-auto space-y-6">
@@ -510,118 +624,7 @@ export function MultiplayerTyperacer({ onBackToMenu, initialRoomCode }: Multipla
 
 
 
-  // Active game
-  if (gameState.gameStarted && currentExpression && !gameState.gameFinished) {
-    console.log('Rendering: Active game')
-    return (
-      <div className="w-full max-w-6xl mx-auto space-y-6">
-        {/* Progress indicators */}
-        <div className="grid md:grid-cols-2 gap-4">
-          <ProgressBar 
-            progress={myProgress} 
-            playerName={playerName} 
-            isMe={true} 
-          />
-          <ProgressBar 
-            progress={opponentProgress} 
-            playerName={gameState.opponent?.username || "Opponent"} 
-            isMe={false} 
-          />
-        </div>
 
-        {/* Game status */}
-        <Card>
-          <CardHeader className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Target className="w-6 h-6" />
-                <span>Race to Finish!</span>
-              </div>
-              <div className="text-sm">
-                Expression {gameState.currentExpressionIndex + 1} of {gameState.room?.expressions.length}
-              </div>
-            </CardTitle>
-          </CardHeader>
-        </Card>
-
-        {/* Expression display */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-center">Target Expression</CardTitle>
-          </CardHeader>
-          <CardContent className={cn(
-            "p-8 text-center transition-all duration-300",
-            isCorrect && "bg-green-50 border-green-200"
-          )}>
-            <div
-              dangerouslySetInnerHTML={{
-                __html: katex.renderToString(currentExpression.latex, {
-                  throwOnError: false,
-                  displayMode: true
-                })
-              }}
-            />
-            <div className="absolute -left-[9999px] bg-white p-4">
-              <div
-                ref={targetRef}
-                dangerouslySetInnerHTML={{
-                  __html: katex.renderToString(currentExpression.latex, {
-                    throwOnError: false,
-                    displayMode: true
-                  })
-                }}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Input section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-center">Your LaTeX Input</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Input
-              ref={inputRef}
-              value={userInput}
-              onChange={(e) => setUserInput(e.target.value)}
-              placeholder="Type the LaTeX expression here..."
-              className={cn(
-                "w-full text-lg p-4 transition-all duration-200",
-                isCorrect && "border-green-500 bg-green-50"
-              )}
-              autoFocus
-              disabled={isCorrect}
-            />
-            
-            <Card className="bg-gray-50 border-dashed">
-              <CardContent className="p-6 text-center min-h-[60px] flex items-center justify-center">
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: katex.renderToString(userInput || '\\phantom{x}', {
-                      throwOnError: false,
-                      displayMode: true
-                    })
-                  }}
-                />
-                <div className="absolute -left-[9999px] bg-white p-4">
-                  <div
-                    ref={userInputRef}
-                    dangerouslySetInnerHTML={{
-                      __html: katex.renderToString(userInput || '\\phantom{x}', {
-                        throwOnError: false,
-                        displayMode: true
-                      })
-                    }}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
 
   // Game finished
   if (gameState.gameFinished) {

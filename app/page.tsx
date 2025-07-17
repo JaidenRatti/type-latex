@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { LatexTyperacer } from './components/LatexTyperacer'
 import { MultiplayerTyperacer } from '../components/MultiplayerTyperacer'
@@ -8,8 +8,29 @@ import { Leaderboard } from '../components/Leaderboard'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { SquarePiIcon as MathIcon, Sparkles, Trophy, Timer, Users } from 'lucide-react'
 
-export default function Home() {
+// Component to handle search params with proper Suspense boundary
+function SearchParamsHandler({ 
+  setInitialRoomCode, 
+  setActiveTab 
+}: { 
+  setInitialRoomCode: (code: string | null) => void
+  setActiveTab: (tab: string) => void 
+}) {
   const searchParams = useSearchParams()
+
+  // Handle shareable room links
+  useEffect(() => {
+    const roomCode = searchParams.get('room')
+    if (roomCode) {
+      setInitialRoomCode(roomCode)
+      setActiveTab('multiplayer')
+    }
+  }, [searchParams, setInitialRoomCode, setActiveTab])
+
+  return null
+}
+
+function HomeContent() {
   const [leaderboardKey, setLeaderboardKey] = useState(0)
   const [activeTab, setActiveTab] = useState('multiplayer')
   const [initialRoomCode, setInitialRoomCode] = useState<string | null>(null)
@@ -22,17 +43,16 @@ export default function Home() {
     setActiveTab('multiplayer')
   }, [])
 
-  // Handle shareable room links
-  useEffect(() => {
-    const roomCode = searchParams.get('room')
-    if (roomCode) {
-      setInitialRoomCode(roomCode)
-      setActiveTab('multiplayer')
-    }
-  }, [searchParams])
-
   return (
     <main className="min-h-screen bg-background text-foreground relative overflow-x-hidden">
+      {/* Handle search params with Suspense boundary */}
+      <Suspense fallback={null}>
+        <SearchParamsHandler 
+          setInitialRoomCode={setInitialRoomCode}
+          setActiveTab={setActiveTab}
+        />
+      </Suspense>
+
       {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse-subtle"></div>
@@ -212,6 +232,21 @@ export default function Home() {
         </footer>
       </div>
     </main>
+  )
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <MathIcon className="w-16 h-16 text-primary animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    }>
+      <HomeContent />
+    </Suspense>
   )
 }
 
