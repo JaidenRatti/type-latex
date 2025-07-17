@@ -113,8 +113,7 @@
 
 /* Enhanced form styles */
 .latex-input {
-  @apply transition-all duration-200 focus:ring-2 focus:ring-primary/20 focus:border-primary;
-  font-family: var(--font-fira-code), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  @apply font-mono transition-all duration-200 focus:ring-2 focus:ring-primary/20 focus:border-primary;
 }
 
 .latex-input:focus {
@@ -164,14 +163,69 @@
 
 /* Enhanced typography */
 body {
-  font-family: var(--font-space-grotesk), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-  @apply antialiased;
+  @apply font-sans antialiased;
 }
 
-h1, h2, h3, h4, h5, h6, .font-heading {
-  font-family: var(--font-space-grotesk), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-  font-weight: 700;
-  @apply tracking-tight;
+h1, h2, h3, h4, h5, h6 {
+  @apply font-heading font-bold tracking-tight;
+}
+
+.font-heading {
+  font-family: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  @apply font-bold tracking-tight;
+}
+
+.font-display {
+  @apply font-heading font-extrabold tracking-tighter;
+}
+
+.font-body {
+  @apply font-sans font-normal;
+}
+
+.font-mono {
+  font-family: var(--font-fira-code), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* Common font utility classes */
+.heading-xl {
+  @apply text-2xl font-heading tracking-tight;
+}
+
+.heading-lg {
+  @apply text-xl font-heading tracking-tight;
+}
+
+.heading-md {
+  @apply text-lg font-semibold tracking-tight;
+}
+
+.heading-sm {
+  @apply text-base font-semibold;
+}
+
+.body-lg {
+  @apply text-lg font-normal;
+}
+
+.body-md {
+  @apply text-base font-normal;
+}
+
+.body-sm {
+  @apply text-sm font-normal;
+}
+
+.caption {
+  @apply text-sm font-medium text-muted-foreground;
+}
+
+.label {
+  @apply text-sm font-semibold;
+}
+
+.button-text {
+  @apply font-semibold;
 }
 
 /* Status indicators */

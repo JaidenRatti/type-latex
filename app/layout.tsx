@@ -36,7 +36,7 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body className="font-sans">{children}
+      <body className="font-sans antialiased">{children}
       <Analytics />
       </body>
     </html>
