@@ -24,11 +24,8 @@ export const latexExpressions: LatexExpression[] = [
   { latex: '\\sin(x+y) = \\sin x \\cos y + \\cos x \\sin y', difficulty: 'medium' },
   { latex: '\\cos(x+y) = \\cos x \\cos y - \\sin x \\sin y', difficulty: 'medium' },
   { latex: '\\frac{d}{dx} \\sin x = \\cos x', difficulty: 'medium' },
-  { latex: 'e^{i\\pi} + 1 = 0', difficulty: 'medium' },
   { latex: '\\int \\sec^2 x dx = \\tan x + C', difficulty: 'medium' },
   { latex: '\\lim_{x \\to 0} \\frac{\\sin x}{x} = 1', difficulty: 'medium' },
-  { latex: '\\neg ( \\forall x \\in S, P(x)) \\equiv \\exists x \\in S, ( \\neg P(x) )', difficulty: 'medium' },
-  { latex: '\\neg ( \\exists x \\in S, P(x)) \\equiv \\forall x \\in S, ( \\neg P(x) )', difficulty: 'medium' },
 
   
   // Hard expressions
@@ -50,6 +47,7 @@ export const latexExpressions: LatexExpression[] = [
   
   // Easy expressions
   { latex: 'y = mx + b', difficulty: 'easy' },
+  { latex: 'e^{i\\pi} + 1 = 0', difficulty: 'easy' },
   { latex: '\\frac{a}{b} \\times \\frac{c}{d} = \\frac{ac}{bd}', difficulty: 'easy' },
   { latex: '\\cos^2\\theta - \\sin^2\\theta = \\cos 2\\theta', difficulty: 'easy' },
   { latex: 'v = u + at', difficulty: 'easy' },
@@ -57,6 +55,8 @@ export const latexExpressions: LatexExpression[] = [
   { latex: '\\frac{a^m}{a^n} = a^{m-n}', difficulty: 'easy' },
   { latex: 'P(A \\cap B) = P(A)P(B)', difficulty: 'easy' },
   { latex: '\\frac{d}{dx}(uv) = u \\frac{dv}{dx} + v \\frac{du}{dx}', difficulty: 'easy' },
+  { latex: '\\neg ( \\forall x \\in S, P(x)) \\equiv \\exists x \\in S, ( \\neg P(x) )', difficulty: 'easy' },
+  { latex: '\\neg ( \\exists x \\in S, P(x)) \\equiv \\forall x \\in S, ( \\neg P(x) )', difficulty: 'easy' },
   { latex: 'y = e^{kt}', difficulty: 'easy' },
   { latex: '\\sin 2\\theta = 2\\sin \\theta \\cos \\theta', difficulty: 'easy' },
   
