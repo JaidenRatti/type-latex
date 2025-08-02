@@ -18,7 +18,7 @@ const firaCode = Fira_Code({
 
 export const metadata: Metadata = {
   title: 'LaTeX Typeracer',
-  description: 'Master the art of the type',
+  description: 'Boost your LaTeX typing skills with interactive tests and races. Perfect your speed and accuracy with live-rendered math expressions to master the art of the type.',
 }
 
 export default function RootLayout({
