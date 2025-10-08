@@ -18,6 +18,9 @@ export interface LeaderboardEntry {
   export interface LatexExpression {
     latex: string
     difficulty: Difficulty
+    isUserSubmitted?: boolean
+    expressionName?: string
+    submittedBy?: string
   }
   
   export type GameMode = '60' | '120' | 'zen'

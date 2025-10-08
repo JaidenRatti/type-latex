@@ -5,19 +5,20 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
-import { 
-  Users, 
-  Crown, 
-  Clock, 
-  Copy, 
-  Share, 
+import {
+  Users,
+  Crown,
+  Clock,
+  Copy,
+  Share,
   Target,
   Trophy,
   Zap,
   CheckCircle,
   Circle,
   UserCheck,
-  Timer
+  Timer,
+  Sparkles
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { DifficultySelection } from '../types/game'
@@ -380,7 +381,27 @@ export function MultiplayerTyperacer({ onBackToMenu, initialRoomCode }: Multipla
             {/* Expression display */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-center">Target Expression</CardTitle>
+                <div className="flex flex-col items-center gap-2">
+                  <CardTitle className="text-center">Target Expression</CardTitle>
+                  {currentExpression?.isUserSubmitted && (
+                    <div className="flex flex-col items-center gap-1">
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100 border border-purple-300 text-purple-700 text-xs font-semibold">
+                        <Sparkles className="w-3 h-3" />
+                        User Submitted
+                      </div>
+                      {currentExpression.expressionName && (
+                        <div className="text-sm text-gray-600 font-medium">
+                          {currentExpression.expressionName}
+                        </div>
+                      )}
+                      {currentExpression.submittedBy && (
+                        <div className="text-xs text-gray-500">
+                          by {currentExpression.submittedBy}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </CardHeader>
               <CardContent className={cn(
                 "p-8 text-center transition-all duration-300",

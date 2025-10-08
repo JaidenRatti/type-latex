@@ -162,6 +162,10 @@ export function Leaderboard() {
                 <p className="text-sm"><strong>Never use</strong> the <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">$</code> symbol</p>
               </li>
               <li className="flex items-start space-x-3">
+                <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                <p className="text-sm">Use <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">\left</code> and <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">\right</code> instead of <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">\Bigl</code> and <code className="bg-gray-100 px-1 py-0.5 rounded text-xs">\Bigr</code></p>
+              </li>
+              <li className="flex items-start space-x-3">
                 <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
                 <p className="text-sm font-medium text-green-700">Happy typesetting! 🎯</p>
               </li>
