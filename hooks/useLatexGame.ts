@@ -8,12 +8,13 @@ export function useLatexGame() {
   const [currentExpression, setCurrentExpression] = useState<LatexExpression | null>(null)
   const [userInput, setUserInput] = useState('')
   const [previousInput, setPreviousInput] = useState('')
-  const [timeLeft, setTimeLeft] = useState(0)
+  const [timeLeft, setTimeLeft] = useState(60)
   const [isGameActive, setIsGameActive] = useState(false)
-  const [score, setScore] = useState<GameScore>({ 
-    expressionsCompleted: 0, 
+  const [timerStarted, setTimerStarted] = useState(false)
+  const [score, setScore] = useState<GameScore>({
+    expressionsCompleted: 0,
     skipped: 0,
-    points: 0 
+    points: 0
   })
   const [gameMode, setGameMode] = useState<GameMode>('60')
   const [isCorrect, setIsCorrect] = useState(false)
@@ -22,7 +23,7 @@ export function useLatexGame() {
     medium: true,
     hard: true
   })
-  
+
   const targetRef = useRef<HTMLDivElement>(null)
   const userInputRef = useRef<HTMLDivElement>(null)
   const lastTarget = useRef('')
@@ -67,10 +68,43 @@ export function useLatexGame() {
     setPreviousInput('')
     setTimeLeft(mode === 'zen' ? 0 : parseInt(mode))
     setIsGameActive(true)
+    setTimerStarted(false)
     setScore({expressionsCompleted: 0, skipped: 0, points: 0 })
     setIsCorrect(false)
     lastTarget.current = ''
   }, [getNextExpression])
+
+  // Load initial expression on mount
+  useEffect(() => {
+    if (!currentExpression) {
+      const availableExpressions = latexExpressions.filter(expr =>
+        (difficultySelection.easy && expr.difficulty === 'easy') ||
+        (difficultySelection.medium && expr.difficulty === 'medium') ||
+        (difficultySelection.hard && expr.difficulty === 'hard')
+      )
+      const initialExpression = availableExpressions.length > 0
+        ? availableExpressions[Math.floor(Math.random() * availableExpressions.length)]
+        : latexExpressions[Math.floor(Math.random() * latexExpressions.length)]
+      setCurrentExpression(initialExpression)
+      setIsGameActive(true)
+    }
+  }, [])
+
+  // Update expression when difficulty selection changes
+  useEffect(() => {
+    if (currentExpression && !timerStarted) {
+      // Only update if timer hasn't started yet (user hasn't begun typing)
+      const availableExpressions = latexExpressions.filter(expr =>
+        (difficultySelection.easy && expr.difficulty === 'easy') ||
+        (difficultySelection.medium && expr.difficulty === 'medium') ||
+        (difficultySelection.hard && expr.difficulty === 'hard')
+      )
+      if (availableExpressions.length > 0) {
+        const newExpression = availableExpressions[Math.floor(Math.random() * availableExpressions.length)]
+        setCurrentExpression(newExpression)
+      }
+    }
+  }, [difficultySelection])
 
   const skipQuestion = useCallback(() => {
     const nextExpression = getNextExpression()
@@ -149,16 +183,16 @@ export function useLatexGame() {
 
   useEffect(() => {
     let timer: NodeJS.Timeout
-    if (isGameActive && gameMode !== 'zen' && timeLeft > 0) {
+    if (isGameActive && timerStarted && gameMode !== 'zen' && timeLeft > 0) {
       timer = setInterval(() => {
         setTimeLeft((prevTime) => prevTime - 1)
       }, 1000)
-    } else if (gameMode !== 'zen' && timeLeft === 0 && isGameActive) {
+    } else if (gameMode !== 'zen' && timeLeft === 0 && isGameActive && timerStarted) {
       setIsGameActive(false)
       calculateScore()
     }
     return () => clearInterval(timer)
-  }, [isGameActive, timeLeft, gameMode])
+  }, [isGameActive, timerStarted, timeLeft, gameMode])
 
   const calculateScore = () => {
     if (!currentExpression) return
@@ -174,12 +208,21 @@ export function useLatexGame() {
     calculateScore()
   }, [])
 
+  const handleUserInput = useCallback((value: string) => {
+    // Start timer on first keystroke
+    if (!timerStarted && value.length > 0 && gameMode !== 'zen') {
+      setTimerStarted(true)
+    }
+    setUserInput(value)
+  }, [timerStarted, gameMode])
+
   return {
     currentExpression,
     userInput,
-    setUserInput,
+    setUserInput: handleUserInput,
     timeLeft,
     isGameActive,
+    timerStarted,
     score,
     setScore,
     startGame,

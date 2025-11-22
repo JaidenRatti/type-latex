@@ -77,14 +77,13 @@ export const latexExpressions: LatexExpression[] = [
   { latex: '\\lim_{x \\to \\infty} x \\sin\\left(\\frac{1}{x}\\right) = 1', difficulty: 'medium' },
   { latex: '\\prod_{p \\text{ prime}} \\frac{1}{1-p^{-s}} = \\zeta(s)', difficulty: 'medium' },
   { latex: '\\int_{0}^{\\infty} \\sin(x) e^{-ax} dx = \\frac{1}{1+a^2}', difficulty: 'medium' },
+  { latex: '\\int_{0}^{\\infty} \\frac{\\sin x}{x} dx = \\frac{\\pi}{2}', difficulty: 'medium' },
 
   // Hard expressions
   { latex: 'f(x) = \\frac{1}{\\sqrt{2\\pi \\sigma^2}} e^{-\\frac{(x-\\mu)^2}{2\\sigma^2}}', difficulty: 'hard' },
   { latex: '\\forall \\epsilon > 0, \\exists \\delta > 0 \\text{ such that } |x - c| < \\delta \\implies |f(x) - L| < \\epsilon', difficulty: 'hard' },
   { latex: '\\oint_{\\partial \\Sigma} \\mathbf{F} \\cdot d\\mathbf{r} = \\int_{\\Sigma} \\nabla \\times \\mathbf{F} \\cdot d\\mathbf{A}', difficulty: 'hard' },
   { latex: '\\frac{1}{\\Gamma(s)} \\int_{0}^{\\infty} x^{s-1} e^{-x} dx = 1', difficulty: 'hard' },
-  { latex: '\\int_{0}^{\\infty} \\frac{\\sin x}{x} dx = \\frac{\\pi}{2}', difficulty: 'hard' },
-  { latex: '\\int_{0}^{\\infty} \\frac{x^{a-1}}{1+x} dx = \\pi \\csc(a\\pi), 0 < a < 1', difficulty: 'hard' },
   { latex: '\\int_{0}^{1} x^{m-1}(1-x)^{n-1} dx = \\frac{\\Gamma(m)\\Gamma(n)}{\\Gamma(m+n)}', difficulty: 'hard' },
   { latex: '\\oint_{|z|=1} \\frac{z^n}{z-2} dz = 0, n \\neq -1', difficulty: 'hard' },
   { latex: '\\frac{\\partial^2 u}{\\partial x^2} + \\frac{\\partial^2 u}{\\partial y^2} = 0', difficulty: 'hard' },
