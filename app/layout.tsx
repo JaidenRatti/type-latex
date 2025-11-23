@@ -1,19 +1,20 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Space_Grotesk, Fira_Code } from 'next/font/google'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from "@vercel/analytics/react"
+import { ThemeProvider } from '@/components/theme-provider'
 
 
-const spaceGrotesk = Space_Grotesk({ 
+const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-space-grotesk',
+  variable: '--font-inter',
 })
 
-const firaCode = Fira_Code({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-fira-code',
+  variable: '--font-mono',
 })
 
 export const metadata: Metadata = {
@@ -27,7 +28,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${firaCode.variable}`}>
+    <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
         <link
           rel="stylesheet"
@@ -36,8 +37,16 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
-      <body className="font-sans antialiased">{children}
-      <Analytics />
+      <body className={`${inter.className} antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   )

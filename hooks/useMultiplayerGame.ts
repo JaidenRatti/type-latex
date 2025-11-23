@@ -59,16 +59,13 @@ export function useMultiplayerGame(playerId: string, username: string) {
   // Create new game room
   const createRoom = useCallback(async (mode: '60' | '120', difficultySelection: DifficultySelection) => {
     const result = await createGameRoom(mode, difficultySelection)
-    console.log('createGameRoom result:', result)
-    
+
     if (result.success && result.data) {
       const room = result.data as GameRoom
-      console.log('Room created:', room)
       setGameState(prev => ({ ...prev, room }))
-      
+
       // Join the room we just created
       const joinResult = await joinGameRoom(room.room_code, playerId, username)
-      console.log('Auto-join result:', joinResult)
       
       if (joinResult.success && joinResult.data) {
         const { participant } = joinResult.data
@@ -101,10 +98,9 @@ export function useMultiplayerGame(playerId: string, username: string) {
       
       // Subscribe to real-time updates
       subscribeToRoom(room.id)
-      
+
       // If room is already active when joining, start countdown
       if (room.status === 'active') {
-        console.log('Joined active room, starting countdown')
         setTimeout(() => startGameCountdown(), 100)
       }
       
@@ -135,10 +131,8 @@ export function useMultiplayerGame(playerId: string, username: string) {
   // Mark player as ready
   const markReady = useCallback(async () => {
     if (!gameState.room) return { success: false, error: 'No room joined' }
-    
-    console.log('Marking player as ready...')
+
     const result = await setPlayerReady(gameState.room.id, playerId)
-    console.log('setPlayerReady result:', result)
     if (result.success) {
       setGameState(prev => ({
         ...prev,
@@ -150,28 +144,22 @@ export function useMultiplayerGame(playerId: string, username: string) {
 
   // Start game countdown
   const startGameCountdown = useCallback(() => {
-    console.log('startGameCountdown called, current countdown:', countdown, 'countdownRef:', countdownRef.current)
-    
     // Prevent multiple countdowns
     if (countdownRef.current !== null) {
-      console.log('Countdown already in progress, skipping')
       return
     }
-    
+
     countdownRef.current = 3
     setCountdown(3)
-    console.log('🎯 Countdown started! Setting countdown to 3')
-    
+
     let currentCount = 3
     const countdownInterval = setInterval(() => {
       currentCount -= 1
-      console.log('Countdown tick:', currentCount)
-      
+
       if (currentCount <= 0) {
         clearInterval(countdownInterval)
         setCountdown(null)
         countdownRef.current = null
-        console.log('Countdown finished, starting game')
         // Small delay to ensure UI updates
         setTimeout(() => {
           setGameState(prev => ({ ...prev, gameStarted: true }))
@@ -202,18 +190,15 @@ export function useMultiplayerGame(playerId: string, username: string) {
           filter: `id=eq.${roomId}`
         },
         (payload) => {
-          console.log('Room update:', payload)
           if (payload.new) {
             const updatedRoom = payload.new as GameRoom
             const oldStatus = (payload.old as GameRoom | undefined)?.status || 'unknown'
-            console.log('Room status changed from', oldStatus, 'to:', updatedRoom.status, 'Current countdown:', countdown)
-            
+
             // Update room first
             setGameState(prev => ({ ...prev, room: updatedRoom }))
-            
+
             // Check if game is restarting (going back to waiting from finished)
             if (updatedRoom.status === 'waiting' && gameState.gameFinished) {
-              console.log('Game restart detected - resetting state for non-pressing player')
               // Reset game state for restart
               setGameState(prev => ({
                 ...prev,
@@ -234,11 +219,7 @@ export function useMultiplayerGame(playerId: string, username: string) {
             
             // Check if game is starting
             if (updatedRoom.status === 'active' && countdownRef.current === null) {
-              console.log('🚀 Game is active and no countdown running, starting countdown. oldStatus:', oldStatus, 'gameStarted:', gameState.gameStarted)
-              console.log('🚀 About to call startGameCountdown()')
               startGameCountdown()
-            } else if (updatedRoom.status === 'active') {
-              console.log('⚠️ Game is active but countdown already running:', countdownRef.current)
             }
             
             // Check if game finished
@@ -257,7 +238,6 @@ export function useMultiplayerGame(playerId: string, username: string) {
           filter: `room_id=eq.${roomId}`
         },
         (payload) => {
-          console.log('Participant update:', payload)
           // Refresh participants
           fetchParticipants(roomId)
         }
@@ -271,7 +251,6 @@ export function useMultiplayerGame(playerId: string, username: string) {
           filter: `room_id=eq.${roomId}`
         },
         (payload) => {
-          console.log('Progress update:', payload)
           // Handle opponent progress updates
           if (payload.new) {
             const progress = payload.new as GameProgress

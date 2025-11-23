@@ -3,8 +3,6 @@ import { useMultiplayerGame } from '../hooks/useMultiplayerGame'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Label } from '@/components/ui/label'
 import {
   Users,
   Crown,
@@ -27,13 +25,18 @@ import 'katex/dist/katex.min.css'
 import katex from 'katex'
 
 interface MultiplayerTyperacerProps {
-  onBackToMenu: () => void
   initialRoomCode?: string | null
 }
 
-export function MultiplayerTyperacer({ onBackToMenu, initialRoomCode }: MultiplayerTyperacerProps) {
+export function MultiplayerTyperacer({ initialRoomCode }: MultiplayerTyperacerProps) {
   const [playerId] = useState(() => `player_${Math.random().toString(36).substr(2, 9)}`)
-  const [playerName, setPlayerName] = useState('')
+  const [playerName, setPlayerName] = useState(() => {
+    // Load saved username from localStorage
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('typelatex_username') || ''
+    }
+    return ''
+  })
   const [joinRoomId, setJoinRoomId] = useState('')
   const [difficultySelection, setDifficultySelection] = useState<DifficultySelection>({
     easy: true,
@@ -44,6 +47,13 @@ export function MultiplayerTyperacer({ onBackToMenu, initialRoomCode }: Multipla
   const [linkCopied, setLinkCopied] = useState(false)
   const [joinError, setJoinError] = useState('')
   const [showJoinTooltip, setShowJoinTooltip] = useState(false)
+
+  // Save username to localStorage whenever it changes
+  useEffect(() => {
+    if (playerName.trim()) {
+      localStorage.setItem('typelatex_username', playerName.trim())
+    }
+  }, [playerName])
 
   // Auto-fill room code from URL parameter
   useEffect(() => {
@@ -73,9 +83,6 @@ export function MultiplayerTyperacer({ onBackToMenu, initialRoomCode }: Multipla
     restartGameInRoom
   } = useMultiplayerGame(playerId, playerName)
 
-  // Debug logging
-  console.log('MultiplayerTyperacer render - countdown:', countdown, 'gameState:', gameState)
-
   // Handle room creation
   const handleCreateRoom = useCallback(async (mode: '60' | '120') => {
     if (!playerName.trim()) {
@@ -83,15 +90,12 @@ export function MultiplayerTyperacer({ onBackToMenu, initialRoomCode }: Multipla
       return
     }
 
-    console.log('Creating room with mode:', mode, 'and difficulty:', difficultySelection)
     const result = await createRoom(mode, difficultySelection)
-    console.log('Create room result:', result)
-    
+
     if (result.success && 'roomId' in result) {
       toast.success(`Room created! Share room ID: ${result.roomId}`)
     } else {
       const errorMsg = 'error' in result ? result.error || 'Failed to create room' : 'Failed to create room'
-      console.error('Create room failed:', errorMsg)
       toast.error(`Failed to create room: ${errorMsg}`)
     }
   }, [playerName, difficultySelection, createRoom])
@@ -109,16 +113,13 @@ export function MultiplayerTyperacer({ onBackToMenu, initialRoomCode }: Multipla
       return
     }
 
-    console.log('Joining room:', joinRoomId.trim(), 'with player:', playerId)
     const result = await joinRoom(joinRoomId.trim())
-    console.log('Join room result:', result)
-    
+
     if (result.success) {
       toast.success('Joined room successfully!')
       setJoinError('') // Clear any errors on success
     } else {
       const errorMsg = 'error' in result ? result.error || 'Failed to join room' : 'Failed to join room'
-      console.error('Join room failed:', errorMsg)
       setJoinError(errorMsg)
       toast.error(errorMsg)
     }
@@ -147,55 +148,46 @@ export function MultiplayerTyperacer({ onBackToMenu, initialRoomCode }: Multipla
   // Progress bar component
   const ProgressBar = ({ progress, playerName, isMe }: { progress: number, playerName: string, isMe: boolean }) => (
     <div className={cn(
-      "bg-white rounded-lg p-4 border-2 transition-all duration-200",
-      isMe ? "border-blue-300 bg-blue-50" : "border-gray-300"
+      "bg-card rounded border p-3",
+      isMe ? "border-foreground" : "border-border"
     )}>
       <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center space-x-2">
-          {isMe ? (
-            <UserCheck className="w-4 h-4 text-blue-600" />
-          ) : (
-            <Users className="w-4 h-4 text-gray-600" />
-          )}
-          <span className={cn(
-            "font-semibold text-sm",
-            isMe ? "text-blue-600" : "text-gray-600"
-          )}>
-            {playerName} {isMe && "(You)"}
-          </span>
-        </div>
-        <span className="text-sm font-medium text-gray-500">
+        <span className={cn(
+          "text-xs font-medium",
+          isMe ? "text-foreground" : "text-muted-foreground"
+        )}>
+          {playerName} {isMe && "(you)"}
+        </span>
+        <span className="text-xs text-muted-foreground">
           {Math.round(progress)}%
         </span>
       </div>
-      <div className="w-full bg-gray-200 rounded-full h-3">
-        <div 
+      <div className="w-full bg-border rounded h-1.5">
+        <div
           className={cn(
-            "h-3 rounded-full transition-all duration-300 ease-out",
-            isMe ? "bg-gradient-to-r from-blue-400 to-blue-600" : "bg-gradient-to-r from-red-400 to-red-600"
+            "h-1.5 rounded transition-all duration-300 ease-out",
+            isMe ? "bg-foreground" : "bg-muted-foreground"
           )}
           style={{ width: `${Math.min(progress, 100)}%` }}
         />
       </div>
-      <div className="flex justify-between text-xs text-gray-500 mt-1">
+      <div className="flex justify-between text-xs text-muted-foreground mt-1">
         <span>
           {gameState.room ? Math.floor((progress / 100) * gameState.room.expressions.length) : 0} / {gameState.room?.expressions.length || 10}
         </span>
-        <span>expressions</span>
       </div>
     </div>
   )
 
   // If not in a room, show room selection
   if (!gameState.room) {
-    console.log('Rendering: No room')
     return (
       <div className="w-full max-w-4xl mx-auto space-y-6">
         <Card>
           <CardContent className="p-8 space-y-6">
             {/* Player name input */}
             <div className="space-y-2">
-              <Label htmlFor="playerName" className="text-lg font-semibold">Your Name</Label>
+              <label htmlFor="playerName" className="text-lg font-semibold block">Your Name</label>
               <Input
                 id="playerName"
                 value={playerName}
@@ -207,28 +199,38 @@ export function MultiplayerTyperacer({ onBackToMenu, initialRoomCode }: Multipla
             </div>
 
             {/* Difficulty selection */}
-            <div className="space-y-4">
-              <h4 className="text-lg font-semibold">Select Difficulty Levels</h4>
-              <div className="flex justify-center gap-8">
-                {(['easy', 'medium', 'hard'] as const).map((difficulty) => (
-                  <div key={difficulty} className="flex items-center space-x-3">
-                    <Checkbox 
-                      id={difficulty} 
-                      checked={difficultySelection[difficulty]}
-                      onCheckedChange={(checked) => 
-                        setDifficultySelection(prev => ({ ...prev, [difficulty]: !!checked }))
+            <div className="flex items-center justify-center gap-2">
+              {(['easy', 'medium', 'hard'] as const).map((difficulty) => {
+                const colorMap = {
+                  easy: difficultySelection[difficulty] ? 'text-green-600' : 'text-muted-foreground',
+                  medium: difficultySelection[difficulty] ? 'text-yellow-600' : 'text-muted-foreground',
+                  hard: difficultySelection[difficulty] ? 'text-red-600' : 'text-muted-foreground'
+                }
+
+                // Check if this is the only selected difficulty
+                const selectedCount = Object.values(difficultySelection).filter(Boolean).length
+                const isOnlySelected = difficultySelection[difficulty] && selectedCount === 1
+
+                return (
+                  <button
+                    key={difficulty}
+                    onClick={() => {
+                      // Prevent deselecting if it's the last one selected
+                      if (!isOnlySelected) {
+                        setDifficultySelection(prev => ({ ...prev, [difficulty]: !prev[difficulty] }))
                       }
-                      className="border-2 w-5 h-5"
-                    />
-                    <Label 
-                      htmlFor={difficulty} 
-                      className="font-medium capitalize cursor-pointer select-none px-3 py-1 rounded-full border transition-all duration-200"
-                    >
-                      {difficulty}
-                    </Label>
-                  </div>
-                ))}
-              </div>
+                    }}
+                    className={cn(
+                      "px-2 py-1 rounded transition-colors text-xs",
+                      colorMap[difficulty],
+                      !isOnlySelected && "hover:opacity-80",
+                      isOnlySelected && "cursor-not-allowed opacity-100"
+                    )}
+                  >
+                    {difficulty}
+                  </button>
+                )
+              })}
             </div>
 
             {/* Room actions */}
@@ -240,18 +242,22 @@ export function MultiplayerTyperacer({ onBackToMenu, initialRoomCode }: Multipla
                   <Button
                     onClick={() => handleCreateRoom('60')}
                     disabled={!playerName.trim()}
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3"
+                    className="w-full bg-background hover:bg-muted border-2 border-border hover:border-foreground/20 text-foreground py-6 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <Clock className="w-4 h-4 mr-2" />
-                                          Quick Race (5 expressions)
+                    <div className="flex flex-col items-center">
+                      <span className="font-medium text-base">Quick Race</span>
+                      <span className="text-xs text-muted-foreground">5 expressions</span>
+                    </div>
                   </Button>
                   <Button
                     onClick={() => handleCreateRoom('120')}
                     disabled={!playerName.trim()}
-                    className="w-full bg-purple-500 hover:bg-purple-600 text-white py-3"
+                    className="w-full bg-background hover:bg-muted border-2 border-border hover:border-foreground/20 text-foreground py-6 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <Target className="w-4 h-4 mr-2" />
-                                          Long Race (10 expressions)
+                    <div className="flex flex-col items-center">
+                      <span className="font-medium text-base">Long Race</span>
+                      <span className="text-xs text-muted-foreground">10 expressions</span>
+                    </div>
                   </Button>
                 </div>
               </div>
@@ -313,25 +319,16 @@ export function MultiplayerTyperacer({ onBackToMenu, initialRoomCode }: Multipla
                 </div>
               </div>
             </div>
-
-            <div className="text-center pt-4">
-              <Button variant="outline" onClick={onBackToMenu}>
-                Back to Main Menu
-              </Button>
-            </div>
           </CardContent>
         </Card>
       </div>
     )
   }
 
-
-
   // Countdown OR Active Game - render together to avoid progress bar re-rendering
   if (countdown !== null || (gameState.gameStarted && currentExpression && !gameState.gameFinished)) {
     const isCountdown = countdown !== null
-    console.log(isCountdown ? '🎯 Rendering countdown UI' : 'Rendering: Active game')
-    
+
     return (
       <div className="w-full max-w-6xl mx-auto space-y-6 transition-all duration-300 ease-in-out">
         {/* Progress indicators - persistent across countdown and active game */}
@@ -350,64 +347,35 @@ export function MultiplayerTyperacer({ onBackToMenu, initialRoomCode }: Multipla
 
         {/* Countdown OR Active Game Content */}
         {isCountdown ? (
-          <Card>
-            <CardContent className="p-16 text-center">
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold">Get Ready!</h2>
-                <div className="text-8xl font-bold text-blue-600 animate-pulse">
-                  {countdown}
-                </div>
-                <p className="text-muted-foreground">The race begins in...</p>
+          <div className="py-16 text-center">
+            <div className="space-y-6">
+              <div className="text-8xl font-bold tabular-nums">
+                {countdown}
               </div>
-            </CardContent>
-          </Card>
+              <p className="text-sm text-muted-foreground">get ready...</p>
+            </div>
+          </div>
         ) : (
           <>
             {/* Game status */}
-            <Card>
-              <CardHeader className="bg-gradient-to-r from-orange-500 to-red-500 text-white">
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Target className="w-6 h-6" />
-                    <span>Race to Finish!</span>
-                  </div>
-                  <div className="text-sm">
-                    Expression {gameState.currentExpressionIndex + 1} of {gameState.room?.expressions.length}
-                  </div>
-                </CardTitle>
-              </CardHeader>
-            </Card>
+            <div className="text-center text-sm text-muted-foreground">
+              expression {gameState.currentExpressionIndex + 1} of {gameState.room?.expressions.length}
+            </div>
 
             {/* Expression display */}
-            <Card>
-              <CardHeader>
-                <div className="flex flex-col items-center gap-2">
-                  <CardTitle className="text-center">Target Expression</CardTitle>
-                  {currentExpression?.isUserSubmitted && (
-                    <div className="flex flex-col items-center gap-1">
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100 border border-purple-300 text-purple-700 text-xs font-semibold">
-                        <Sparkles className="w-3 h-3" />
-                        User Submitted
-                      </div>
-                      {currentExpression.expressionName && (
-                        <div className="text-sm text-gray-600 font-medium">
-                          {currentExpression.expressionName}
-                        </div>
-                      )}
-                      {currentExpression.submittedBy && (
-                        <div className="text-xs text-gray-500">
-                          by {currentExpression.submittedBy}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent className={cn(
-                "p-8 text-center transition-all duration-300",
-                isCorrect && "bg-green-50 border-green-200"
-              )}>
+            <div className="text-center py-8">
+              <div
+                className="inline-block"
+                dangerouslySetInnerHTML={{
+                  __html: katex.renderToString(currentExpression!.latex, {
+                    throwOnError: false,
+                    displayMode: true
+                  })
+                }}
+              />
+              <div className="absolute -left-[9999px]">
                 <div
+                  ref={targetRef}
                   dangerouslySetInnerHTML={{
                     __html: katex.renderToString(currentExpression!.latex, {
                       throwOnError: false,
@@ -415,64 +383,51 @@ export function MultiplayerTyperacer({ onBackToMenu, initialRoomCode }: Multipla
                     })
                   }}
                 />
-                <div className="absolute -left-[9999px] bg-white p-4">
+              </div>
+            </div>
+
+            {/* Input section */}
+            <div className="space-y-4">
+                <input
+                  ref={inputRef}
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                  placeholder="start typing..."
+                  className={cn(
+                    "w-full text-center text-lg p-4 bg-background border-b-2 border-border focus:outline-none focus:border-foreground font-mono caret-foreground transition-colors",
+                    isCorrect && "border-green-500"
+                  )}
+                  autoFocus
+                  disabled={isCorrect}
+                />
+
+                {userInput && (
+                  <div className="text-center py-4 text-muted-foreground">
+                    <div
+                      className="inline-block"
+                      dangerouslySetInnerHTML={{
+                        __html: katex.renderToString(userInput, {
+                          throwOnError: false,
+                          displayMode: true
+                        })
+                      }}
+                    />
+                  </div>
+                )}
+
+                {/* Clean container for comparison - positioned off-screen */}
+                <div className="absolute -left-[9999px]">
                   <div
-                    ref={targetRef}
+                    ref={userInputRef}
                     dangerouslySetInnerHTML={{
-                      __html: katex.renderToString(currentExpression!.latex, {
+                      __html: katex.renderToString(userInput || '\\phantom{x}', {
                         throwOnError: false,
                         displayMode: true
                       })
                     }}
                   />
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Input section */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-center">Your LaTeX Input</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Input
-                  ref={inputRef}
-                  value={userInput}
-                  onChange={(e) => setUserInput(e.target.value)}
-                  placeholder="Type the LaTeX expression here..."
-                  className={cn(
-                    "w-full text-lg p-4 transition-all duration-200",
-                    isCorrect && "border-green-500 bg-green-50"
-                  )}
-                  autoFocus
-                  disabled={isCorrect}
-                />
-                
-                <Card className="bg-gray-50 border-dashed">
-                  <CardContent className="p-6 text-center min-h-[60px] flex items-center justify-center">
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: katex.renderToString(userInput || '\\phantom{x}', {
-                          throwOnError: false,
-                          displayMode: true
-                        })
-                      }}
-                    />
-                    <div className="absolute -left-[9999px] bg-white p-4">
-                      <div
-                        ref={userInputRef}
-                        dangerouslySetInnerHTML={{
-                          __html: katex.renderToString(userInput || '\\phantom{x}', {
-                            throwOnError: false,
-                            displayMode: true
-                          })
-                        }}
-                      />
-                    </div>
-                  </CardContent>
-                </Card>
-              </CardContent>
-            </Card>
+              </div>
           </>
         )}
       </div>
@@ -481,164 +436,97 @@ export function MultiplayerTyperacer({ onBackToMenu, initialRoomCode }: Multipla
 
   // Waiting room - only when room status is waiting AND no countdown
   if (gameState.room && gameState.room.status === 'waiting') {
-    console.log('Rendering: Waiting room')
     return (
-      <div className="w-full max-w-4xl mx-auto space-y-6">
-        <Card>
-          <CardContent className="p-8 space-y-6">
-            <div className="text-center space-y-2">
-              <div className="flex items-center justify-center space-x-3">
-                <h3 className="text-2xl font-bold">Room ID: {gameState.room.room_code}</h3>
-                
-                {/* Copy Code Button */}
-                <div className="relative flex flex-col items-center">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      if (gameState.room) {
-                        navigator.clipboard.writeText(gameState.room.room_code)
-                        toast.success('Room code copied!')
-                        setCodeCopied(true)
-                        setTimeout(() => setCodeCopied(false), 2000)
-                      }
-                    }}
-                    className="border-blue-300 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
-                    title="Copy room code"
-                  >
-                    <Copy className="w-4 h-4" />
-                  </Button>
-                  <span className="text-xs text-gray-500 mt-1">Code</span>
-                  
-                  {/* Floating tooltip */}
-                  {codeCopied && (
-                    <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-3 py-2 rounded-md text-sm font-medium shadow-lg z-50 animate-in fade-in-0 zoom-in-95 duration-200">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4" />
-                        Code copied!
-                      </div>
-                      {/* Arrow pointing down */}
-                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-green-600"></div>
-                    </div>
-                  )}
-                </div>
+      <div className="w-full max-w-3xl mx-auto space-y-8">
+        <div className="text-center space-y-4">
+          <div className="flex items-center justify-center gap-3">
+            <div className="text-lg font-mono">{gameState.room.room_code}</div>
+            <button
+              onClick={() => {
+                if (gameState.room) {
+                  navigator.clipboard.writeText(gameState.room.room_code)
+                  toast.success('code copied')
+                }
+              }}
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
+              copy code
+            </button>
+            <button
+              onClick={() => {
+                if (gameState.room) {
+                  const shareableUrl = `${window.location.origin}?room=${gameState.room.room_code}`
+                  navigator.clipboard.writeText(shareableUrl)
+                  toast.success('link copied')
+                }
+              }}
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
+              copy link
+            </button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {gameState.room.mode === '60' ? '5' : '10'} expressions · first to finish wins
+          </p>
+        </div>
 
-                                {/* Copy Link Button */}
-                <div className="relative flex flex-col items-center">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      if (gameState.room) {
-                        const shareableUrl = `${window.location.origin}?room=${gameState.room.room_code}`
-                        navigator.clipboard.writeText(shareableUrl)
-                        toast.success('Room link copied!')
-                        setLinkCopied(true)
-                        setTimeout(() => setLinkCopied(false), 2000)
-                      }
-                    }}
-                    className="border-green-300 text-green-600 hover:bg-green-50 hover:text-green-700"
-                    title="Copy shareable link"
-                  >
-                    <Share className="w-4 h-4" />
-                  </Button>
-                  <span className="text-xs text-gray-500 mt-1">Link</span>
-                   
-                                      {/* Floating tooltip for link copy */}
-                   {linkCopied && (
-                     <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-3 py-2 rounded-md text-sm font-medium shadow-lg z-50 animate-in fade-in-0 zoom-in-95 duration-200">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="w-4 h-4" />
-                        Link copied!
-                      </div>
-                      {/* Arrow pointing down */}
-                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-green-600"></div>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <p className="text-muted-foreground">Copy the code to share manually, or copy the link for one-click joining!</p>
-            </div>
-
-            {/* Players */}
-            <div className="grid md:grid-cols-2 gap-4">
-              {gameState.participants.map((participant, index) => (
-                <div
-                  key={participant.id}
-                  className={cn(
-                    "p-4 rounded-lg border-2 flex items-center justify-between",
-                    participant.is_ready ? "bg-green-50 border-green-300" : "bg-gray-50 border-gray-300"
-                  )}
-                >
-                  <div className="flex items-center space-x-2">
-                    {participant.is_ready ? (
-                      <CheckCircle className="w-5 h-5 text-green-600" />
-                    ) : (
-                      <Circle className="w-5 h-5 text-gray-400" />
-                    )}
-                    <span className="font-semibold">
-                      {participant.player_id === playerId ? `${playerName} (You)` : participant.username}
-                    </span>
-                  </div>
-                  <span className={cn(
-                    "px-2 py-1 rounded text-sm",
-                    participant.is_ready ? "bg-green-200 text-green-800" : "bg-gray-200 text-gray-600"
-                  )}>
-                    {participant.is_ready ? 'Ready' : 'Not Ready'}
-                  </span>
-                </div>
-              ))}
-              
-              {/* Empty slot */}
-              {gameState.participants.length < 2 && (
-                <div className="p-4 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center">
-                  <span className="text-gray-500">Waiting for opponent...</span>
-                </div>
+        {/* Players */}
+        <div className="space-y-3">
+          {gameState.participants.map((participant) => (
+            <div
+              key={participant.id}
+              className={cn(
+                "p-3 rounded border flex items-center justify-between text-sm",
+                participant.is_ready
+                  ? "border-green-500 dark:border-green-400 bg-green-50 dark:bg-green-950/30"
+                  : "border-border bg-card"
               )}
+            >
+              <span className={cn(
+                "text-foreground",
+                participant.player_id === playerId && "font-medium"
+              )}>
+                {participant.player_id === playerId ? `${playerName} (you)` : participant.username}
+              </span>
+              <span className={cn(
+                "text-xs",
+                participant.is_ready ? "text-green-600 dark:text-green-400" : "text-muted-foreground"
+              )}>
+                {participant.is_ready ? 'ready' : 'not ready'}
+              </span>
             </div>
+          ))}
 
-            {/* Ready button */}
-            {gameState.myParticipant && !gameState.myParticipant.is_ready && (
-              <div className="text-center">
-                <Button
-                  onClick={handleMarkReady}
-                  disabled={gameState.participants.length < 2}
-                  className="bg-green-500 hover:bg-green-600 text-white px-8 py-3"
-                >
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  Ready to Start!
-                </Button>
-                {gameState.participants.length < 2 && (
-                  <p className="text-sm text-muted-foreground mt-2">
-                    Waiting for opponent to join...
-                  </p>
-                )}
-              </div>
-            )}
-
-            {/* Game details */}
-            <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-              <h4 className="font-semibold text-blue-800 mb-2">Race Details</h4>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="text-blue-600">Mode:</span> {gameState.room.mode === '60' ? 'Quick Race' : 'Long Race'}
-                </div>
-                <div>
-                  <span className="text-blue-600">Expressions:</span> {gameState.room.expressions.length}
-                </div>
-              </div>
-              <div className="mt-2 text-xs text-blue-600">
-                🏁 First to complete all expressions wins!
-              </div>
+          {/* Empty slot */}
+          {gameState.participants.length < 2 && (
+            <div className="p-3 rounded border border-dashed border-border bg-card flex items-center justify-center text-sm text-muted-foreground">
+              waiting for opponent...
             </div>
+          )}
+        </div>
 
-            <div className="text-center pt-4">
-              <Button variant="outline" onClick={leaveRoom}>
-                Leave Room
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Ready button */}
+        {gameState.myParticipant && !gameState.myParticipant.is_ready && (
+          <div className="text-center space-y-2">
+            <Button
+              onClick={handleMarkReady}
+              disabled={gameState.participants.length < 2}
+              variant="outline"
+              size="sm"
+            >
+              ready
+            </Button>
+          </div>
+        )}
+
+        <div className="text-center">
+          <button
+            onClick={leaveRoom}
+            className="text-xs text-muted-foreground hover:text-foreground"
+          >
+            leave room
+          </button>
+        </div>
       </div>
     )
   }
@@ -649,73 +537,57 @@ export function MultiplayerTyperacer({ onBackToMenu, initialRoomCode }: Multipla
 
   // Game finished
   if (gameState.gameFinished) {
-    console.log('Rendering: Game finished')
     const isWinner = gameState.winner?.player_id === playerId
-    
+
     return (
-      <div className="w-full max-w-4xl mx-auto">
-        <Card>
-          <CardHeader className={cn(
-            "text-white text-center",
-            isWinner ? "bg-gradient-to-r from-green-500 to-emerald-500" : "bg-gradient-to-r from-red-500 to-orange-500"
-          )}>
-            <CardTitle className="text-3xl font-bold flex items-center justify-center space-x-2">
-              {isWinner ? <Crown className="w-8 h-8" /> : <Trophy className="w-8 h-8" />}
-              <span>{isWinner ? 'You Won!' : 'Game Over'}</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-8 text-center space-y-6">
-            <div className="text-xl">
-              {isWinner 
-                ? '🎉 Congratulations! You completed all expressions first!' 
-                : '😔 Better luck next time! Your opponent finished first.'
-              }
-            </div>
+      <div className="w-full max-w-3xl mx-auto text-center space-y-8 py-12">
+        <div className="space-y-2">
+          <div className="text-4xl font-medium">
+            {isWinner ? 'you won' : 'you lost'}
+          </div>
+          <p className="text-sm text-muted-foreground">
+            {isWinner
+              ? 'nice work!'
+              : `${gameState.winner?.username || 'opponent'} finished first`
+            }
+          </p>
+        </div>
 
-            {/* Final progress */}
-            <div className="grid md:grid-cols-2 gap-4">
-              <ProgressBar 
-                progress={myProgress} 
-                playerName={playerName} 
-                isMe={true} 
-              />
-              <ProgressBar 
-                progress={opponentProgress} 
-                playerName={gameState.opponent?.username || "Opponent"} 
-                isMe={false} 
-              />
-            </div>
+        {/* Final progress */}
+        <div className="grid md:grid-cols-2 gap-4">
+          <ProgressBar
+            progress={myProgress}
+            playerName={playerName}
+            isMe={true}
+          />
+          <ProgressBar
+            progress={opponentProgress}
+            playerName={gameState.opponent?.username || "opponent"}
+            isMe={false}
+          />
+        </div>
 
-            <div className="space-y-4">
-              <Button 
-                onClick={handlePlayAgain}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3"
-              >
-                Play Again
-              </Button>
-              <div className="space-x-4">
-                <Button variant="outline" onClick={leaveRoom}>
-                  Leave Room
-                </Button>
-                <Button variant="outline" onClick={onBackToMenu}>
-                  Back to Main Menu
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        <div className="flex items-center justify-center gap-3">
+          <Button
+            onClick={handlePlayAgain}
+            variant="outline"
+            size="sm"
+          >
+            play again
+          </Button>
+          <button
+            onClick={leaveRoom}
+            className="text-xs text-muted-foreground hover:text-foreground"
+          >
+            leave room
+          </button>
+        </div>
       </div>
     )
   }
 
   // Fallback - if we have a room but no other condition matches, show waiting room
   if (gameState.room) {
-    console.log('Fallback rendering - showing waiting room', { 
-      room: gameState.room, 
-      gameStarted: gameState.gameStarted, 
-      gameFinished: gameState.gameFinished,
-      countdown 
-    })
     return (
       <div className="w-full max-w-4xl mx-auto space-y-6">
         <Card>
