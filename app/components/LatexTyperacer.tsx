@@ -143,6 +143,10 @@ export function LatexTyperacer({ onGameEnd }: LatexTyperacerProps) {
                   // Prevent deselecting if it's the last one selected
                   if (!isOnlySelected) {
                     setDifficultySelection(prev => ({ ...prev, [difficulty]: !prev[difficulty] }))
+                    // If timer is running, restart the game with new difficulty
+                    if (timerStarted) {
+                      startGame(gameMode)
+                    }
                   }
                 }}
                 className={cn(
@@ -161,7 +165,7 @@ export function LatexTyperacer({ onGameEnd }: LatexTyperacerProps) {
 
       {/* Game Status - Only show after user starts typing */}
       <div className="h-8 flex items-center justify-center">
-        {isGameActive && timerStarted && (
+        {isGameActive && (timerStarted || gameMode === 'zen') && (
           <div className="flex items-center justify-center gap-6 text-sm animate-in fade-in duration-500">
             {gameMode !== 'zen' && (
               <div className="text-2xl font-semibold tabular-nums">{timeLeft}</div>
@@ -177,7 +181,7 @@ export function LatexTyperacer({ onGameEnd }: LatexTyperacerProps) {
         )}
       </div>
 
-      {currentExpression && isGameActive && (
+      {currentExpression && (isGameActive || (!isGameActive && score.points === 0)) && (
         <div className="space-y-6">
           {/* Math Expression Display */}
           <div className="text-center py-8">
@@ -190,6 +194,18 @@ export function LatexTyperacer({ onGameEnd }: LatexTyperacerProps) {
                 })
               }}
             />
+            {/* User submission indicator */}
+            {currentExpression.isUserSubmitted && (
+              <div className="mt-4 flex justify-center">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs bg-muted/50 text-muted-foreground border border-border">
+                  {currentExpression.submittedBy ? (
+                    <>submitted by {currentExpression.submittedBy}</>
+                  ) : (
+                    <>user submitted</>
+                  )}
+                </span>
+              </div>
+            )}
             {/* Clean container for comparison - positioned off-screen */}
             <div className="absolute -left-[9999px]">
               <div
@@ -216,7 +232,7 @@ export function LatexTyperacer({ onGameEnd }: LatexTyperacerProps) {
                 isCorrect && "border-green-500"
               )}
               autoFocus
-              disabled={isCorrect || !isGameActive}
+              disabled={isCorrect || (!isGameActive && score.points > 0)}
             />
 
             {/* Live Preview */}

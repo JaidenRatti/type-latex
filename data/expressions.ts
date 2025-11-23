@@ -78,6 +78,17 @@ export const latexExpressions: LatexExpression[] = [
   { latex: '\\prod_{p \\text{ prime}} \\frac{1}{1-p^{-s}} = \\zeta(s)', difficulty: 'medium' },
   { latex: '\\int_{0}^{\\infty} \\sin(x) e^{-ax} dx = \\frac{1}{1+a^2}', difficulty: 'medium' },
   { latex: '\\int_{0}^{\\infty} \\frac{\\sin x}{x} dx = \\frac{\\pi}{2}', difficulty: 'medium' },
+{ latex: '\\frac{d}{dx} \\left( x^{x} \\right ) = x^{x}(\\ln x + 1)', difficulty: 'medium' },
+{ latex: '\\int \\frac{1}{(x-a)(x-b)} dx = \\frac{1}{a-b} \\ln \\left| \\frac{x-a}{x-b} \\right| + C', difficulty: 'medium' },
+{ latex: '\\nabla \\cdot (f\\mathbf{v}) = f\\nabla \\cdot \\mathbf{v} + \\mathbf{v} \\cdot \\nabla f', difficulty: 'medium' },
+{ latex: '\\sum_{n=1}^{\\infty} \\frac{(-1)^{n}}{n} = -\\ln 2', difficulty: 'medium' },
+{ latex: '\\int_{0}^{\\pi} \\ln(1 - 2a\\cos x + a^{2}) dx = 0', difficulty: 'medium' },
+{ latex: '\\frac{d}{dx} \\left( \\frac{u}{v} \\right ) = \\frac{u\'v - uv\'}{v^{2}}', difficulty: 'medium' },
+{ latex: '\\int x^{m}(1-x)^{n} dx = \\frac{m! n!}{(m+n+1)!}', difficulty: 'medium' },
+{ latex: '\\mathrm{Cov}(X,Y) = \\mathbb{E}[XY] - \\mathbb{E}[X]\\mathbb{E}[Y]', difficulty: 'medium' },
+{ latex: '\\int_{0}^{1} \\frac{x^{p-1}}{1+x} dx = H_{p} - \\ln 2', difficulty: 'medium' },
+{ latex: '\\partial_{x}(uv) = u\\partial_{x}v + v\\partial_{x}u', difficulty: 'medium' },
+
 
   // Hard expressions
   { latex: 'f(x) = \\frac{1}{\\sqrt{2\\pi \\sigma^2}} e^{-\\frac{(x-\\mu)^2}{2\\sigma^2}}', difficulty: 'hard' },
@@ -91,8 +102,21 @@ export const latexExpressions: LatexExpression[] = [
   { latex: '\\int_{0}^{\\infty} \\sin(x) e^{-ax} dx = \\frac{1}{1+a^2}', difficulty: 'hard' },
   { latex: '\\text{If } X \\sim \\text{Normal}(\\mu, \\sigma^2), \\text{ then } \\mathbb{E}[X^4] = 3\\sigma^4 + 6\\mu^2\\sigma^2 + \\mu^4.', difficulty: 'hard' },
   { latex: '\\rho \\left( \\frac{\\partial \\mathbf{v}}{\\partial t} + (\\mathbf{v} \\cdot \\nabla)\\mathbf{v} \\right) = -\\nabla p + \\mu \\nabla^2 \\mathbf{v} + \\mathbf{f}', difficulty: 'hard' },
-  
-  // User-submitted expressions
+  { latex: '\\zeta(2k) = (-1)^{k+1} \\frac{(2\\pi)^{2k} B_{2k}}{2(2k)!}', difficulty: 'medium' },
+{ latex: '\\int_{0}^{\\infty} x^{s-1} e^{-x^{2}} dx = \\frac{1}{2} \\Gamma\\left(\\frac{s}{2}\\right)', difficulty: 'hard' },
+{ latex: '\\nabla^{2} f = \\frac{\\partial^{2} f}{\\partial x^{2}} + \\frac{\\partial^{2} f}{\\partial y^{2}} + \\frac{\\partial^{2} f}{\\partial z^{2}}', difficulty: 'hard' },
+{ latex: '\\sum_{n=1}^{\\infty} \\frac{\\mu(n)}{n^{s}} = \\frac{1}{\\zeta(s)}', difficulty: 'hard' },
+{ latex: '\\int_{-\\infty}^{\\infty} e^{-\\pi x^{2}} e^{-2\\pi i k x} dx = e^{-\\pi k^{2}}', difficulty: 'hard' },
+{ latex: '\\frac{1}{2\\pi i} \\oint_{C} \\frac{f(z)}{(z-z_{0})^{n+1}} dz = \\frac{f^{(n)}(z_{0})}{n!}', difficulty: 'hard' },
+{ latex: '\\prod_{n=1}^{\\infty} \\left(1 + \\frac{x^{2}}{n^{2}\\pi^{2}} \\right) = \\frac{\\sinh x}{x}', difficulty: 'hard' },
+{ latex: '\\int_{0}^{\\infty} J_{\\nu}(ax) e^{-bx} x^{\\nu+1} dx = \\frac{a^{\\nu}}{(b^{2}+a^{2})^{\\nu+1}}', difficulty: 'hard' },
+{ latex: '\\int_{0}^{\\infty} x^{s-1} \\cos(ax) dx = \\Gamma(s) \\frac{\\cos(\\frac{\\pi s}{2})}{a^{s}}', difficulty: 'hard' },
+{ latex: '\\left( \\nabla \\times (\\nabla \\times \\mathbf{A}) \\right ) = \\nabla(\\nabla \\cdot \\mathbf{A}) - \\nabla^{2} \\mathbf{A}', difficulty: 'hard' },
+{ latex: '\\int_{0}^{2\\pi} \\ln|1 - re^{i\\theta}| d\\theta = 0,\\ \\ r < 1', difficulty: 'hard' },
+{ latex: '\\int_{0}^{\\infty} x^{m} e^{-\\alpha x^{2}} \\cos(\\beta x) dx = \\frac{\\Gamma(\\frac{m+1}{2})}{2\\alpha^{\\frac{m+1}{2}}} {}_{1}F_{1}\\left( \\frac{m+1}{2}; \\frac{1}{2}; -\\frac{\\beta^{2}}{4\\alpha} \\right)', difficulty: 'hard' },
+{ latex: 'Y_{\\ell}^{m}(\\theta,\\phi) = (-1)^{m} \\sqrt{\\frac{(2\\ell+1)}{4\\pi} \\frac{(\\ell-m)!}{(\\ell+m)!}} P_{\\ell}^{m}(\\cos\\theta) e^{im\\phi}', difficulty: 'hard' },
+
+// User-submitted expressions
   {latex: 'f(A)=\\{f(x)\\in Y:x\\in A\\}', difficulty: 'medium', isUserSubmitted: true, expressionName: "Image of a function"},
   {latex: 'f^{-1}(B)=\\{x\\in X:f(x)\\in B\\}', difficulty: 'medium', isUserSubmitted: true, expressionName: "Preimage of a function"},
   {latex: '\\mathbb{E}[X]=\\sum xp_X(x)', difficulty: 'medium', isUserSubmitted: true, expressionName: "Expectation of a discrete random variable"},
