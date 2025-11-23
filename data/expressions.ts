@@ -99,4 +99,10 @@ export const latexExpressions: LatexExpression[] = [
   {latex: '\\mathbb{Q}=\\left \\{\\frac{a}{b}:a,b\\in\\mathbb{Z} \\right \\}', difficulty: 'medium', isUserSubmitted: true, expressionName: "Definition of Rationals"},
   {latex: 'B_a(r) \\coloneqq \\{x\\in\\mathbb{R}^d:\\Vert x-a\\Vert<r\\}', difficulty: 'hard', isUserSubmitted: true, expressionName: "Definition of a ball in R^d"},
   {latex: 'f(x)=-\\frac{d}{dx} \\left ( \\frac{1}{x}\\frac{d}{dx} \\right )', difficulty: 'medium', isUserSubmitted: true, submittedBy: "Honk Solo"},
+  {latex: '\\frac{h}{2}(b_{1}+b_{2})', difficulty: 'easy', isUserSubmitted: true, expressionName: "Area of trapezoid"},
+  {latex: '\\pi r^{2}', difficulty: 'easy', isUserSubmitted: true, expressionName: "Area of circle"},
+  {latex: '\\frac{1}{3}\\pi r^{2}h', difficulty: 'easy', isUserSubmitted: true, expressionName: "Volume of cone"},
+  {latex: '\\frac{4}{3}\\pi r^{3} ', difficulty: 'easy', isUserSubmitted: true, expressionName: "Volume of sphere"},
+  {latex: '\\frac{4}{3}\\pi r_{1}r_{2}r_{3}', difficulty: 'easy', isUserSubmitted: true, expressionName: "Volume of ellipsoid"},
+  {latex: '\\sigma(aX+b)=\\lvert a \\rvert \\sigma (X)', difficulty: 'medium', isUserSubmitted: true, expressionName: "Standard deviation"},
 ];
