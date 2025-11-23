@@ -30,7 +30,13 @@ interface MultiplayerTyperacerProps {
 
 export function MultiplayerTyperacer({ initialRoomCode }: MultiplayerTyperacerProps) {
   const [playerId] = useState(() => `player_${Math.random().toString(36).substr(2, 9)}`)
-  const [playerName, setPlayerName] = useState('')
+  const [playerName, setPlayerName] = useState(() => {
+    // Load saved username from localStorage
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('typelatex_username') || ''
+    }
+    return ''
+  })
   const [joinRoomId, setJoinRoomId] = useState('')
   const [difficultySelection, setDifficultySelection] = useState<DifficultySelection>({
     easy: true,
@@ -41,6 +47,13 @@ export function MultiplayerTyperacer({ initialRoomCode }: MultiplayerTyperacerPr
   const [linkCopied, setLinkCopied] = useState(false)
   const [joinError, setJoinError] = useState('')
   const [showJoinTooltip, setShowJoinTooltip] = useState(false)
+
+  // Save username to localStorage whenever it changes
+  useEffect(() => {
+    if (playerName.trim()) {
+      localStorage.setItem('typelatex_username', playerName.trim())
+    }
+  }, [playerName])
 
   // Auto-fill room code from URL parameter
   useEffect(() => {
@@ -70,9 +83,6 @@ export function MultiplayerTyperacer({ initialRoomCode }: MultiplayerTyperacerPr
     restartGameInRoom
   } = useMultiplayerGame(playerId, playerName)
 
-  // Debug logging
-  console.log('MultiplayerTyperacer render - countdown:', countdown, 'gameState:', gameState)
-
   // Handle room creation
   const handleCreateRoom = useCallback(async (mode: '60' | '120') => {
     if (!playerName.trim()) {
@@ -80,15 +90,12 @@ export function MultiplayerTyperacer({ initialRoomCode }: MultiplayerTyperacerPr
       return
     }
 
-    console.log('Creating room with mode:', mode, 'and difficulty:', difficultySelection)
     const result = await createRoom(mode, difficultySelection)
-    console.log('Create room result:', result)
-    
+
     if (result.success && 'roomId' in result) {
       toast.success(`Room created! Share room ID: ${result.roomId}`)
     } else {
       const errorMsg = 'error' in result ? result.error || 'Failed to create room' : 'Failed to create room'
-      console.error('Create room failed:', errorMsg)
       toast.error(`Failed to create room: ${errorMsg}`)
     }
   }, [playerName, difficultySelection, createRoom])
@@ -106,16 +113,13 @@ export function MultiplayerTyperacer({ initialRoomCode }: MultiplayerTyperacerPr
       return
     }
 
-    console.log('Joining room:', joinRoomId.trim(), 'with player:', playerId)
     const result = await joinRoom(joinRoomId.trim())
-    console.log('Join room result:', result)
-    
+
     if (result.success) {
       toast.success('Joined room successfully!')
       setJoinError('') // Clear any errors on success
     } else {
       const errorMsg = 'error' in result ? result.error || 'Failed to join room' : 'Failed to join room'
-      console.error('Join room failed:', errorMsg)
       setJoinError(errorMsg)
       toast.error(errorMsg)
     }
@@ -177,7 +181,6 @@ export function MultiplayerTyperacer({ initialRoomCode }: MultiplayerTyperacerPr
 
   // If not in a room, show room selection
   if (!gameState.room) {
-    console.log('Rendering: No room')
     return (
       <div className="w-full max-w-4xl mx-auto space-y-6">
         <Card>
@@ -239,18 +242,22 @@ export function MultiplayerTyperacer({ initialRoomCode }: MultiplayerTyperacerPr
                   <Button
                     onClick={() => handleCreateRoom('60')}
                     disabled={!playerName.trim()}
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3"
+                    className="w-full bg-background hover:bg-muted border-2 border-border hover:border-foreground/20 text-foreground py-6 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <Clock className="w-4 h-4 mr-2" />
-                                          Quick Race (5 expressions)
+                    <div className="flex flex-col items-center">
+                      <span className="font-medium text-base">Quick Race</span>
+                      <span className="text-xs text-muted-foreground">5 expressions</span>
+                    </div>
                   </Button>
                   <Button
                     onClick={() => handleCreateRoom('120')}
                     disabled={!playerName.trim()}
-                    className="w-full bg-purple-500 hover:bg-purple-600 text-white py-3"
+                    className="w-full bg-background hover:bg-muted border-2 border-border hover:border-foreground/20 text-foreground py-6 transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <Target className="w-4 h-4 mr-2" />
-                                          Long Race (10 expressions)
+                    <div className="flex flex-col items-center">
+                      <span className="font-medium text-base">Long Race</span>
+                      <span className="text-xs text-muted-foreground">10 expressions</span>
+                    </div>
                   </Button>
                 </div>
               </div>
@@ -321,8 +328,7 @@ export function MultiplayerTyperacer({ initialRoomCode }: MultiplayerTyperacerPr
   // Countdown OR Active Game - render together to avoid progress bar re-rendering
   if (countdown !== null || (gameState.gameStarted && currentExpression && !gameState.gameFinished)) {
     const isCountdown = countdown !== null
-    console.log(isCountdown ? '🎯 Rendering countdown UI' : 'Rendering: Active game')
-    
+
     return (
       <div className="w-full max-w-6xl mx-auto space-y-6 transition-all duration-300 ease-in-out">
         {/* Progress indicators - persistent across countdown and active game */}
@@ -430,7 +436,6 @@ export function MultiplayerTyperacer({ initialRoomCode }: MultiplayerTyperacerPr
 
   // Waiting room - only when room status is waiting AND no countdown
   if (gameState.room && gameState.room.status === 'waiting') {
-    console.log('Rendering: Waiting room')
     return (
       <div className="w-full max-w-3xl mx-auto space-y-8">
         <div className="text-center space-y-4">
@@ -472,17 +477,20 @@ export function MultiplayerTyperacer({ initialRoomCode }: MultiplayerTyperacerPr
               key={participant.id}
               className={cn(
                 "p-3 rounded border flex items-center justify-between text-sm",
-                participant.is_ready ? "border-green-500 bg-green-50" : "border-border bg-card"
+                participant.is_ready
+                  ? "border-green-500 dark:border-green-400 bg-green-50 dark:bg-green-950/30"
+                  : "border-border bg-card"
               )}
             >
               <span className={cn(
+                "text-foreground",
                 participant.player_id === playerId && "font-medium"
               )}>
                 {participant.player_id === playerId ? `${playerName} (you)` : participant.username}
               </span>
               <span className={cn(
                 "text-xs",
-                participant.is_ready ? "text-green-600" : "text-muted-foreground"
+                participant.is_ready ? "text-green-600 dark:text-green-400" : "text-muted-foreground"
               )}>
                 {participant.is_ready ? 'ready' : 'not ready'}
               </span>
@@ -529,7 +537,6 @@ export function MultiplayerTyperacer({ initialRoomCode }: MultiplayerTyperacerPr
 
   // Game finished
   if (gameState.gameFinished) {
-    console.log('Rendering: Game finished')
     const isWinner = gameState.winner?.player_id === playerId
 
     return (
@@ -581,12 +588,6 @@ export function MultiplayerTyperacer({ initialRoomCode }: MultiplayerTyperacerPr
 
   // Fallback - if we have a room but no other condition matches, show waiting room
   if (gameState.room) {
-    console.log('Fallback rendering - showing waiting room', { 
-      room: gameState.room, 
-      gameStarted: gameState.gameStarted, 
-      gameFinished: gameState.gameFinished,
-      countdown 
-    })
     return (
       <div className="w-full max-w-4xl mx-auto space-y-6">
         <Card>

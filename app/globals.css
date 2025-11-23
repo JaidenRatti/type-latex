@@ -135,15 +135,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .leaderboard-row.rank-1 {
-  @apply bg-yellow-50 border-l-2 border-yellow-600;
+  @apply bg-yellow-50 dark:bg-yellow-950/30 border-l-2 border-yellow-600 dark:border-yellow-400;
 }
 
 .leaderboard-row.rank-2 {
-  @apply bg-slate-50 border-l-2 border-slate-600;
+  @apply bg-slate-50 dark:bg-slate-900/50 border-l-2 border-slate-600 dark:border-slate-400;
 }
 
 .leaderboard-row.rank-3 {
-  @apply bg-orange-50 border-l-2 border-orange-600;
+  @apply bg-orange-50 dark:bg-orange-950/30 border-l-2 border-orange-600 dark:border-orange-400;
 }
 
 /* Custom scrollbar */

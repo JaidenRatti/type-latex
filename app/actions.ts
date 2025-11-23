@@ -7,8 +7,6 @@ import { latexExpressions } from '@/data/expressions'
 
 export async function submitScore(score: Omit<LeaderboardEntry, "id" | "created_at">) {
   try {
-    console.log('Submitting score:', score)
-
     const { data, error } = await supabase
       .from('leaderboard')
       .insert([{
@@ -24,8 +22,6 @@ export async function submitScore(score: Omit<LeaderboardEntry, "id" | "created_
       console.error('Supabase error:', error)
       return { success: false, error: error.message }
     }
-
-    console.log('Score submitted successfully:', data)
 
     revalidatePath('/')
     return { success: true, data }
@@ -103,8 +99,6 @@ export async function createGameRoom(mode: '60' | '120', difficultySelection: { 
       roomCode = generateShortId() // Try once more
     }
 
-    console.log('Attempting to create room with expressions:', gameExpressions.length, 'mode:', mode, 'roomCode:', roomCode)
-    
     const { data: room, error } = await supabase
       .from('game_rooms')
       .insert([{
@@ -126,8 +120,6 @@ export async function createGameRoom(mode: '60' | '120', difficultySelection: { 
       return { success: false, error: `Database error: ${error.message}${error.hint ? ` (${error.hint})` : ''}` }
     }
 
-    console.log('Room created successfully:', room)
-
     return { success: true, data: room }
   } catch (error) {
     console.error('Error creating game room:', error)
@@ -137,8 +129,6 @@ export async function createGameRoom(mode: '60' | '120', difficultySelection: { 
 
 export async function joinGameRoom(roomCode: string, playerId: string, username: string) {
   try {
-    console.log('Attempting to join room:', roomCode, 'with player:', playerId, 'username:', username)
-    
     // Check if room exists and is joinable
     const { data: room, error: roomError } = await supabase
       .from('game_rooms')
@@ -157,13 +147,10 @@ export async function joinGameRoom(roomCode: string, playerId: string, username:
       })
       return { success: false, error: `Database error: ${roomError.message}${roomError.hint ? ` (${roomError.hint})` : ''}` }
     }
-    
+
     if (!room) {
-      console.log('Room not found or not available for joining')
       return { success: false, error: 'Room not found or not available' }
     }
-
-    console.log('Room found:', room)
 
     // Check current participants
     const { data: participants, error: participantsError } = await supabase
@@ -176,15 +163,11 @@ export async function joinGameRoom(roomCode: string, playerId: string, username:
       return { success: false, error: `Database error: ${participantsError.message}${participantsError.hint ? ` (${participantsError.hint})` : ''}` }
     }
 
-    console.log('Current participants:', participants)
-
     if (participants.length >= 2) {
-      console.log('Room is full')
       return { success: false, error: 'Cannot join - room is full (2/2 players)' }
     }
 
     // Add participant
-    console.log('Adding participant to room')
     const { data: participant, error: participantError } = await supabase
       .from('game_participants')
       .insert([{
@@ -205,8 +188,6 @@ export async function joinGameRoom(roomCode: string, playerId: string, username:
       })
       return { success: false, error: `Database error: ${participantError.message}${participantError.hint ? ` (${participantError.hint})` : ''}` }
     }
-
-    console.log('Participant added successfully:', participant)
 
     return { success: true, data: { room, participant } }
   } catch (error) {
@@ -240,20 +221,17 @@ export async function setPlayerReady(roomId: string, playerId: string) {
     }
 
     if (allParticipants.length === 2 && allParticipants.every(p => p.is_ready)) {
-      console.log('Both players ready, starting game')
       // Start the game
       const { error: updateError } = await supabase
         .from('game_rooms')
-        .update({ 
+        .update({
           status: 'active',
           started_at: new Date().toISOString()
         })
         .eq('id', roomId)
-      
+
       if (updateError) {
         console.error('Error starting game:', updateError)
-      } else {
-        console.log('Successfully started game')
       }
     }
 

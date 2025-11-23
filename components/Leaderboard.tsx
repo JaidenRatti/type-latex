@@ -16,14 +16,11 @@ export function Leaderboard() {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [scriptLoaded, setScriptLoaded] = useState(false)
-
   const fetchLeaderboard = useCallback(async () => {
     try {
       setIsLoading(true)
       setError(null)
       const data = await getLeaderboard(mode)
-      console.log('Fetched leaderboard data:', data)
       setEntries(data)
     } catch (err) {
       console.error('Leaderboard error:', err)
@@ -36,18 +33,6 @@ export function Leaderboard() {
   useEffect(() => {
     fetchLeaderboard()
   }, [fetchLeaderboard])
-
-  // Initialize Typeform when script loads
-  useEffect(() => {
-    if (scriptLoaded && typeof window !== 'undefined') {
-      // @ts-ignore - Typeform global
-      if (window.tf && window.tf.createPopup) {
-        // Force Typeform to re-scan for embeds
-        const event = new Event('DOMContentLoaded', { bubbles: true })
-        document.dispatchEvent(event)
-      }
-    }
-  }, [scriptLoaded])
 
   const refreshLeaderboard = () => {
     fetchLeaderboard()
@@ -148,14 +133,13 @@ export function Leaderboard() {
               <div className="bg-secondary p-4 rounded border border-border">
                 <h4 className="font-medium text-sm mb-2">Add an expression</h4>
                 <p className="text-xs text-muted-foreground mb-4">
-                  Submit your favorite LaTeX expressions (or make a PR)
+                  Submit your favorite LaTeX expressions (or send a PR)
                 </p>
 
                 <div data-tf-live="01JDZXFXSAFAEF7R6ZHJJX9ZQ5"></div>
                 <Script
                   src="//embed.typeform.com/next/embed.js"
-                  strategy="lazyOnload"
-                  onLoad={() => setScriptLoaded(true)}
+                  strategy="afterInteractive"
                 />
               </div>
             </div>

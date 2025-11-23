@@ -18,6 +18,3 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
         }
     }
 });
-
-console.log('Supabase URL:', supabaseUrl ? '[REDACTED]' : 'Missing');
-console.log('Supabase Anon Key:', supabaseAnonKey ? '[REDACTED]' : 'Missing');

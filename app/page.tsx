@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { LatexTyperacer } from './components/LatexTyperacer'
 import { MultiplayerTyperacer } from '../components/MultiplayerTyperacer'
 import { Leaderboard } from '../components/Leaderboard'
+import { ThemeToggle } from '../components/ThemeToggle'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Square, Trophy, Timer, Users } from 'lucide-react'
 
@@ -51,7 +52,10 @@ function HomeContent() {
 
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Section */}
-        <header className="mb-8 text-center">
+        <header className="mb-8 text-center relative">
+          <div className="absolute right-0 top-0">
+            <ThemeToggle />
+          </div>
           <h1 className="text-2xl font-medium text-foreground mb-1">
             typelatex
           </h1>
