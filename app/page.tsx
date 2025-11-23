@@ -60,7 +60,7 @@ function HomeContent() {
             typelatex
           </h1>
           <p className="text-xs text-muted-foreground">
-            practice typing mathematical expressions
+            practice typing math expressions
           </p>
         </header>
 
