@@ -129,4 +129,6 @@ export const latexExpressions: LatexExpression[] = [
   {latex: '\\frac{4}{3}\\pi r^{3} ', difficulty: 'easy', isUserSubmitted: true, expressionName: "Volume of sphere"},
   {latex: '\\frac{4}{3}\\pi r_{1}r_{2}r_{3}', difficulty: 'easy', isUserSubmitted: true, expressionName: "Volume of ellipsoid"},
   {latex: '\\sigma(aX+b)=\\lvert a \\rvert \\sigma (X)', difficulty: 'medium', isUserSubmitted: true, expressionName: "Standard deviation"},
+  {latex: '\\frac{d}{dt}\\left(\\frac{\\partial L}{\\partial \\dot{q}}\\right) = \\frac{\\partial L}{\\partial q}', difficulty: 'hard', isUserSubmitted: true, submittedBy: "Yaoji", expressionName: "Euler Lagrange Equation" },
+  {latex: '\\oint_C f(z) d z=2 \\pi i \\sum_{k=1}^n \\operatorname{Res}\\left(f, z_k\\right)', difficulty: 'hard', isUserSubmitted: true, expressionName: "Residual Theorem", submittedBy: "Yaoji"},
 ];
