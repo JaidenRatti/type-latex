@@ -3,6 +3,7 @@ import { compareRenderedLatex } from '../utils/compareImages'
 import debounce from 'lodash/debounce'
 import { latexExpressions } from '../data/expressions'
 import { GameMode, GameScore, DifficultySelection, LatexExpression } from '../types/game'
+import { toast } from 'sonner'
 
 export function useLatexGame() {
   const [currentExpression, setCurrentExpression] = useState<LatexExpression | null>(null)
@@ -209,6 +210,15 @@ export function useLatexGame() {
   }, [])
 
   const handleUserInput = useCallback((value: string) => {
+    // Check if user typed a $ sign
+    if (value.includes('$')) {
+      toast.info("You don't need to type $ - you're already in math mode!", {
+        duration: 2000,
+      })
+      // Remove all $ signs from the input
+      value = value.replace(/\$/g, '')
+    }
+
     // Start timer on first keystroke
     if (!timerStarted && value.length > 0 && gameMode !== 'zen') {
       setTimerStarted(true)

@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from "@vercel/analytics/react"
 import { ThemeProvider } from '@/components/theme-provider'
+import { Toaster } from 'sonner'
 
 
 const inter = Inter({
@@ -45,6 +46,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Toaster position="bottom-center" />
         </ThemeProvider>
         <Analytics />
       </body>
