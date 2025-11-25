@@ -112,7 +112,7 @@ export const latexExpressions: LatexExpression[] = [
 { latex: '\\int_{0}^{\\infty} J_{\\nu}(ax) e^{-bx} x^{\\nu+1} dx = \\frac{a^{\\nu}}{(b^{2}+a^{2})^{\\nu+1}}', difficulty: 'hard' },
 { latex: '\\int_{0}^{\\infty} x^{s-1} \\cos(ax) dx = \\Gamma(s) \\frac{\\cos(\\frac{\\pi s}{2})}{a^{s}}', difficulty: 'hard' },
 { latex: '\\left( \\nabla \\times (\\nabla \\times \\mathbf{A}) \\right ) = \\nabla(\\nabla \\cdot \\mathbf{A}) - \\nabla^{2} \\mathbf{A}', difficulty: 'hard' },
-{ latex: '\\int_{0}^{2\\pi} \\ln|1 - re^{i\\theta}| d\\theta = 0,\\ \\ r < 1', difficulty: 'hard' },
+{ latex: '\\int_{0}^{2\\pi} \\ln|1 - re^{i\\theta}| d\\theta = 0, r < 1', difficulty: 'hard' },
 { latex: '\\int_{0}^{\\infty} x^{m} e^{-\\alpha x^{2}} \\cos(\\beta x) dx = \\frac{\\Gamma(\\frac{m+1}{2})}{2\\alpha^{\\frac{m+1}{2}}} {}_{1}F_{1}\\left( \\frac{m+1}{2}; \\frac{1}{2}; -\\frac{\\beta^{2}}{4\\alpha} \\right)', difficulty: 'hard' },
 { latex: 'Y_{\\ell}^{m}(\\theta,\\phi) = (-1)^{m} \\sqrt{\\frac{(2\\ell+1)}{4\\pi} \\frac{(\\ell-m)!}{(\\ell+m)!}} P_{\\ell}^{m}(\\cos\\theta) e^{im\\phi}', difficulty: 'hard' },
 
