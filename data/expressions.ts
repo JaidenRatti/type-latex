@@ -131,4 +131,6 @@ export const latexExpressions: LatexExpression[] = [
   {latex: '\\sigma(aX+b)=\\lvert a \\rvert \\sigma (X)', difficulty: 'medium', isUserSubmitted: true, expressionName: "Standard deviation"},
   {latex: '\\frac{d}{dt}\\left(\\frac{\\partial L}{\\partial \\dot{q}}\\right) = \\frac{\\partial L}{\\partial q}', difficulty: 'hard', isUserSubmitted: true, submittedBy: "Yaoji", expressionName: "Euler Lagrange Equation" },
   {latex: '\\oint_C f(z) d z=2 \\pi i \\sum_{k=1}^n \\operatorname{Res}\\left(f, z_k\\right)', difficulty: 'hard', isUserSubmitted: true, expressionName: "Residual Theorem", submittedBy: "Yaoji"},
+  {latex: 'c \\equiv m^e \\pmod{n}', difficulty: 'medium', isUserSubmitted: true, expressionName: "RSA", submittedBy: "Triode"},
+  {latex: 'G = \\bigsqcup_{w \\in W} BwB', difficulty: 'hard', isUserSubmitted: true, expressionName: "Bruhat Decomposition"}
 ];
