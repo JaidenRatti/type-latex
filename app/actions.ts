@@ -38,7 +38,6 @@ export async function getLeaderboard(mode: '60' | '120') {
       .select('*')
       .eq('mode', mode)
       .order('points', { ascending: false })
-      .limit(100)
 
     if (error) {
       console.error('Supabase error:', error)
