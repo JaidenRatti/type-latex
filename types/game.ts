@@ -29,6 +29,7 @@ export interface LeaderboardEntry {
     easy: boolean
     medium: boolean
     hard: boolean
+    userSubmitted: boolean
   }
 
   // Multiplayer types

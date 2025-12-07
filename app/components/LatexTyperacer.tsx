@@ -140,8 +140,14 @@ export function LatexTyperacer({ onGameEnd }: LatexTyperacerProps) {
               <button
                 key={difficulty}
                 onClick={() => {
-                  // Prevent deselecting if it's the last one selected
-                  if (!isOnlySelected) {
+                  // If user submitted is active, switch to this difficulty
+                  if (difficultySelection.userSubmitted) {
+                    setDifficultySelection({ easy: false, medium: false, hard: false, userSubmitted: false, [difficulty]: true })
+                    if (timerStarted) {
+                      startGame(gameMode)
+                    }
+                  } else if (!isOnlySelected) {
+                    // Prevent deselecting if it's the last one selected
                     setDifficultySelection(prev => ({ ...prev, [difficulty]: !prev[difficulty] }))
                     // If timer is running, restart the game with new difficulty
                     if (timerStarted) {
@@ -152,14 +158,33 @@ export function LatexTyperacer({ onGameEnd }: LatexTyperacerProps) {
                 className={cn(
                   "px-2 py-1 rounded transition-colors text-xs",
                   colorMap[difficulty],
-                  !isOnlySelected && "hover:opacity-80",
-                  isOnlySelected && "cursor-not-allowed opacity-100"
+                  !isOnlySelected && !difficultySelection.userSubmitted && "hover:opacity-80",
+                  isOnlySelected && !difficultySelection.userSubmitted && "cursor-not-allowed opacity-100",
+                  difficultySelection.userSubmitted && "hover:opacity-80"
                 )}
               >
                 {difficulty}
               </button>
             )
           })}
+
+          <div className="w-px h-4 bg-border mx-1"></div>
+
+          <button
+            onClick={() => {
+              setDifficultySelection({ easy: false, medium: false, hard: false, userSubmitted: true })
+              if (timerStarted) {
+                startGame(gameMode)
+              }
+            }}
+            className={cn(
+              "px-2 py-1 rounded transition-colors text-xs",
+              difficultySelection.userSubmitted ? 'text-purple-600' : 'text-muted-foreground',
+              "hover:opacity-80"
+            )}
+          >
+            user submitted
+          </button>
         </div>
       </div>
 

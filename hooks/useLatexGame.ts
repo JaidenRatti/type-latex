@@ -22,7 +22,8 @@ export function useLatexGame() {
   const [difficultySelection, setDifficultySelection] = useState<DifficultySelection>({
     easy: true,
     medium: true,
-    hard: true
+    hard: true,
+    userSubmitted: false
   })
 
   const targetRef = useRef<HTMLDivElement>(null)
@@ -31,7 +32,10 @@ export function useLatexGame() {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const getAvailableExpressions = useCallback(() => {
-    return latexExpressions.filter(expr => 
+    if (difficultySelection.userSubmitted) {
+      return latexExpressions.filter(expr => expr.isUserSubmitted === true)
+    }
+    return latexExpressions.filter(expr =>
       (difficultySelection.easy && expr.difficulty === 'easy') ||
       (difficultySelection.medium && expr.difficulty === 'medium') ||
       (difficultySelection.hard && expr.difficulty === 'hard')
@@ -51,7 +55,7 @@ export function useLatexGame() {
     const availableExpressions = getAvailableExpressions()
     if (availableExpressions.length === 0) {
       // If no difficulties are selected, enable all
-      setDifficultySelection({ easy: true, medium: true, hard: true })
+      setDifficultySelection({ easy: true, medium: true, hard: true, userSubmitted: false })
       return latexExpressions[Math.floor(Math.random() * latexExpressions.length)]
     }
     let nextExpression
@@ -78,11 +82,13 @@ export function useLatexGame() {
   // Load initial expression on mount
   useEffect(() => {
     if (!currentExpression) {
-      const availableExpressions = latexExpressions.filter(expr =>
-        (difficultySelection.easy && expr.difficulty === 'easy') ||
-        (difficultySelection.medium && expr.difficulty === 'medium') ||
-        (difficultySelection.hard && expr.difficulty === 'hard')
-      )
+      const availableExpressions = difficultySelection.userSubmitted
+        ? latexExpressions.filter(expr => expr.isUserSubmitted === true)
+        : latexExpressions.filter(expr =>
+            (difficultySelection.easy && expr.difficulty === 'easy') ||
+            (difficultySelection.medium && expr.difficulty === 'medium') ||
+            (difficultySelection.hard && expr.difficulty === 'hard')
+          )
       const initialExpression = availableExpressions.length > 0
         ? availableExpressions[Math.floor(Math.random() * availableExpressions.length)]
         : latexExpressions[Math.floor(Math.random() * latexExpressions.length)]
@@ -95,11 +101,13 @@ export function useLatexGame() {
   useEffect(() => {
     if (currentExpression && !timerStarted) {
       // Only update if timer hasn't started yet (user hasn't begun typing)
-      const availableExpressions = latexExpressions.filter(expr =>
-        (difficultySelection.easy && expr.difficulty === 'easy') ||
-        (difficultySelection.medium && expr.difficulty === 'medium') ||
-        (difficultySelection.hard && expr.difficulty === 'hard')
-      )
+      const availableExpressions = difficultySelection.userSubmitted
+        ? latexExpressions.filter(expr => expr.isUserSubmitted === true)
+        : latexExpressions.filter(expr =>
+            (difficultySelection.easy && expr.difficulty === 'easy') ||
+            (difficultySelection.medium && expr.difficulty === 'medium') ||
+            (difficultySelection.hard && expr.difficulty === 'hard')
+          )
       if (availableExpressions.length > 0) {
         const newExpression = availableExpressions[Math.floor(Math.random() * availableExpressions.length)]
         setCurrentExpression(newExpression)
