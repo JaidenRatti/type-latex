@@ -100,7 +100,7 @@ export function Leaderboard() {
           <CardContent className="p-6">
             <ul className="space-y-2.5 text-sm">
               <li>
-                <strong>Don't know a symbol?</strong> Draw it using{' '}
+                <strong>Don&apos;t know a symbol?</strong> Draw it using{' '}
                 <a
                   href="https://detexify.kirelabs.org/classify.html"
                   target="_blank"

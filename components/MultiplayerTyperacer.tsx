@@ -123,7 +123,7 @@ export function MultiplayerTyperacer({ initialRoomCode }: MultiplayerTyperacerPr
       setJoinError(errorMsg)
       toast.error(errorMsg)
     }
-  }, [playerName, joinRoomId, joinRoom, playerId])
+  }, [playerName, joinRoomId, joinRoom])
 
   // Handle ready state
   const handleMarkReady = useCallback(async () => {

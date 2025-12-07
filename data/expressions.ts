@@ -111,7 +111,7 @@ export const latexExpressions: LatexExpression[] = [
 { latex: '\\int_{0}^{\\infty} J_{\\nu}(ax) e^{-bx} x^{\\nu+1} dx = \\frac{a^{\\nu}}{(b^{2}+a^{2})^{\\nu+1}}', difficulty: 'hard' },
 { latex: '\\int_{0}^{\\infty} x^{s-1} \\cos(ax) dx = \\Gamma(s) \\frac{\\cos(\\frac{\\pi s}{2})}{a^{s}}', difficulty: 'hard' },
 { latex: '\\left( \\nabla \\times (\\nabla \\times \\mathbf{A}) \\right ) = \\nabla(\\nabla \\cdot \\mathbf{A}) - \\nabla^{2} \\mathbf{A}', difficulty: 'hard' },
-{ latex: '\\int_{0}^{2\\pi} \\ln|1 - re^{i\\theta}| d\\theta = 0,\\ \\ r < 1', difficulty: 'hard' },
+{ latex: '\\int_{0}^{2\\pi} \\ln|1 - re^{i\\theta}| d\\theta = 0, r < 1', difficulty: 'hard' },
 { latex: '\\int_{0}^{\\infty} x^{m} e^{-\\alpha x^{2}} \\cos(\\beta x) dx = \\frac{\\Gamma(\\frac{m+1}{2})}{2\\alpha^{\\frac{m+1}{2}}} {}_{1}F_{1}\\left( \\frac{m+1}{2}; \\frac{1}{2}; -\\frac{\\beta^{2}}{4\\alpha} \\right)', difficulty: 'hard' },
 { latex: 'Y_{\\ell}^{m}(\\theta,\\phi) = (-1)^{m} \\sqrt{\\frac{(2\\ell+1)}{4\\pi} \\frac{(\\ell-m)!}{(\\ell+m)!}} P_{\\ell}^{m}(\\cos\\theta) e^{im\\phi}', difficulty: 'hard' },
 
@@ -148,4 +148,6 @@ export const latexExpressions: LatexExpression[] = [
   {latex: 'A^{-1}=\\frac{1}{\\det A}\\times \\begin{pmatrix}d & -b  \\\\ -c & a\\end{pmatrix}', difficulty: 'medium', isUserSubmitted: true, expressionName: "Inverse formula for a 2×2 matrix"},
   {latex: 'L(x,\\lambda)=f(x)-\\sum_{i \\in E\\cup I}\\lambda_{i}c_{i}(x)', difficulty: 'medium', isUserSubmitted: true, expressionName: "Lagrange function"},
   {latex: '0=\\nabla_{x}L(x^{*},\\lambda^{*})=\\nabla f(x^{*})-\\sum \\limits_{i\\in A(x^{*})}\\lambda_{i}^{*}\\nabla c_{i}(x^{*})', difficulty: 'medium', isUserSubmitted: true, expressionName: "KKT conditions"},
+  {latex: 'c \\equiv m^e \\pmod{n}', difficulty: 'medium', isUserSubmitted: true, expressionName: "RSA", submittedBy: "Triode"},
+  {latex: 'G = \\bigsqcup_{w \\in W} BwB', difficulty: 'hard', isUserSubmitted: true, expressionName: "Bruhat Decomposition"}
   ];
