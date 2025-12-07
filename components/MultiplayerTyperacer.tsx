@@ -41,7 +41,8 @@ export function MultiplayerTyperacer({ initialRoomCode }: MultiplayerTyperacerPr
   const [difficultySelection, setDifficultySelection] = useState<DifficultySelection>({
     easy: true,
     medium: true,
-    hard: true
+    hard: true,
+    userSubmitted: true
   })
   const [codeCopied, setCodeCopied] = useState(false)
   const [linkCopied, setLinkCopied] = useState(false)
@@ -208,7 +209,8 @@ export function MultiplayerTyperacer({ initialRoomCode }: MultiplayerTyperacerPr
                 }
 
                 // Check if this is the only selected difficulty
-                const selectedCount = Object.values(difficultySelection).filter(Boolean).length
+                const selectedCount = (['easy', 'medium', 'hard'] as const)
+                  .filter(d => difficultySelection[d]).length
                 const isOnlySelected = difficultySelection[difficulty] && selectedCount === 1
 
                 return (
