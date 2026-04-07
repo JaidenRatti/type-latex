@@ -103,6 +103,7 @@ export async function createGameRoom(mode: '60' | '120', difficultySelection: { 
       .insert([{
         room_code: roomCode,
         mode,
+        difficulty_selection: difficultySelection,
         expressions: gameExpressions
       }])
       .select()
@@ -325,6 +326,25 @@ export async function updateGameProgress(roomId: string, playerId: string, expre
   }
 }
 
+export async function leaveGameRoom(roomId: string, playerId: string) {
+  try {
+    const { error } = await supabase
+      .from('game_participants')
+      .delete()
+      .eq('room_id', roomId)
+      .eq('player_id', playerId)
+
+    if (error) {
+      return { success: false, error: error.message }
+    }
+
+    return { success: true }
+  } catch (error) {
+    console.error('Error leaving room:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error occurred' }
+  }
+}
+
 export async function restartGame(roomId: string) {
   try {
     // Get the current room to preserve mode and difficulty settings
@@ -340,11 +360,11 @@ export async function restartGame(roomId: string) {
 
     // Generate new expressions using the same mode and difficulty as before
     const expressionCount = room.mode === '60' ? 5 : 10
-    
-    // For simplicity, we'll use all difficulties if we can't determine original selection
-    // In a more sophisticated implementation, you might store the original difficulty selection
-    const availableExpressions = latexExpressions.filter(expr => 
-      expr.difficulty === 'easy' || expr.difficulty === 'medium' || expr.difficulty === 'hard'
+    const ds = room.difficulty_selection || { easy: true, medium: true, hard: true }
+    const availableExpressions = latexExpressions.filter(expr =>
+      (ds.easy && expr.difficulty === 'easy') ||
+      (ds.medium && expr.difficulty === 'medium') ||
+      (ds.hard && expr.difficulty === 'hard')
     )
     
     const shuffled = [...availableExpressions].sort(() => Math.random() - 0.5)
