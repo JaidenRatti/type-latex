@@ -11,11 +11,12 @@ import {
   DifficultySelection 
 } from '../types/game'
 import { 
-  createGameRoom, 
-  joinGameRoom, 
-  setPlayerReady, 
+  createGameRoom,
+  joinGameRoom,
+  setPlayerReady,
   updateGameProgress,
-  restartGame 
+  restartGame,
+  leaveGameRoom
 } from '@/app/actions'
 
 export function useMultiplayerGame(playerId: string, username: string) {
@@ -192,39 +193,41 @@ export function useMultiplayerGame(playerId: string, username: string) {
         (payload) => {
           if (payload.new) {
             const updatedRoom = payload.new as GameRoom
-            const oldStatus = (payload.old as GameRoom | undefined)?.status || 'unknown'
 
-            // Update room first
-            setGameState(prev => ({ ...prev, room: updatedRoom }))
+            // Single atomic state update — uses prev to avoid stale closure
+            setGameState(prev => {
+              const newState = { ...prev, room: updatedRoom }
 
-            // Check if game is restarting (going back to waiting from finished)
-            if (updatedRoom.status === 'waiting' && gameState.gameFinished) {
-              // Reset game state for restart
-              setGameState(prev => ({
-                ...prev,
-                gameStarted: false,
-                gameFinished: false,
-                currentExpressionIndex: 0,
-                winner: null
-              }))
+              // If room is back to waiting and game was active/finished, reset
+              if (updatedRoom.status === 'waiting' && (prev.gameStarted || prev.gameFinished)) {
+                newState.gameStarted = false
+                newState.gameFinished = false
+                newState.currentExpressionIndex = 0
+                newState.winner = null
+              }
+
+              if (updatedRoom.status === 'finished') {
+                newState.gameFinished = true
+              }
+
+              return newState
+            })
+
+            // Side effects for restart
+            if (updatedRoom.status === 'waiting') {
               setUserInput('')
               setPreviousInput('')
               setIsCorrect(false)
               setCountdown(null)
               countdownRef.current = null
-              
+
               // Fetch updated participants (with reset ready states)
               setTimeout(() => fetchParticipants(roomId), 100)
             }
-            
+
             // Check if game is starting
             if (updatedRoom.status === 'active' && countdownRef.current === null) {
               startGameCountdown()
-            }
-            
-            // Check if game finished
-            if (updatedRoom.status === 'finished') {
-              setGameState(prev => ({ ...prev, gameFinished: true }))
             }
           }
         }
@@ -264,7 +267,7 @@ export function useMultiplayerGame(playerId: string, username: string) {
       .subscribe()
 
     subscriptionRef.current = roomSubscription
-  }, [playerId, gameState.gameStarted, gameState.gameFinished, startGameCountdown])
+  }, [playerId, startGameCountdown])
 
   // Fetch current participants
   const fetchParticipants = useCallback(async (roomId: string) => {
@@ -290,8 +293,13 @@ export function useMultiplayerGame(playerId: string, username: string) {
       if (winner) {
         setGameState(prev => ({ ...prev, winner, gameFinished: true }))
       } else {
-        // No winner means game is not finished (important for restart)
-        setGameState(prev => ({ ...prev, winner: null, gameFinished: false }))
+        // No winner — if room is waiting (restart), also reset gameStarted
+        setGameState(prev => ({
+          ...prev,
+          winner: null,
+          gameFinished: false,
+          ...(prev.room?.status === 'waiting' ? { gameStarted: false, currentExpressionIndex: 0 } : {})
+        }))
       }
     }
   }, [playerId])
@@ -388,7 +396,11 @@ export function useMultiplayerGame(playerId: string, username: string) {
   }, [])
 
   // Leave room
-  const leaveRoom = useCallback(() => {
+  const leaveRoom = useCallback(async () => {
+    // Remove participant from DB so other players are notified
+    if (gameState.room?.id) {
+      await leaveGameRoom(gameState.room.id, playerId)
+    }
     if (subscriptionRef.current) {
       subscriptionRef.current.unsubscribe()
     }
@@ -407,7 +419,7 @@ export function useMultiplayerGame(playerId: string, username: string) {
     setIsCorrect(false)
     setCountdown(null)
     setTimeLeft(0)
-  }, [])
+  }, [gameState.room?.id, playerId])
 
   // Restart game with same players
   const restartGameInRoom = useCallback(async () => {

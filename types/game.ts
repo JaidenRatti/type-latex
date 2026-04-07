@@ -38,6 +38,7 @@ export interface LeaderboardEntry {
     room_code: string
     status: 'waiting' | 'active' | 'finished'
     mode: '60' | '120'
+    difficulty_selection: { easy: boolean, medium: boolean, hard: boolean }
     expressions: LatexExpression[]
     created_at: string
     started_at?: string
