@@ -167,5 +167,7 @@ export const latexExpressions: LatexExpression[] = [
   { latex: '\\iiint_V \\mu(u,v,w)dudvdw', difficulty: 'medium', isUserSubmitted: true, expressionName: "Triple integral over V", submittedBy: "blorb" },
   { latex: '\\iint_V \\mu(u,v)dudv', difficulty: 'medium', isUserSubmitted: true, expressionName: "Double integral over V", submittedBy: "blorb" },
   { latex: 'f(x)=\\begin{cases}x^2 & \\text{if } x \\ge 0 \\\\ -x & \\text{if } x < 0\\end{cases}', difficulty: 'medium', isUserSubmitted: true, expressionName: "Piecewise function", submittedBy: "blorb" },
-  { latex: '\\frac{1}{\\sqrt{1 + \\frac{1}{1 + \\frac{1}{x}}}}', difficulty: 'medium', isUserSubmitted: true, expressionName: "Nested fraction expression", submittedBy: "blorb" }
+  { latex: '\\frac{1}{\\sqrt{1 + \\frac{1}{1 + \\frac{1}{x}}}}', difficulty: 'medium', isUserSubmitted: true, expressionName: "Nested fraction expression", submittedBy: "blorb" },
+  { latex: '(i\\hbar\\gamma^\\mu \\partial_\\mu - mc)\\psi = 0', difficulty: 'hard', isUserSubmitted: true, expressionName: "The Dirac Equation", submittedBy: "Revan"},
+  { latex: '\\mathcal{L}_{\\text{EM}} = -\\frac14 F_{\\mu\\nu} F^{\\mu\\nu}', difficulty: 'medium', isUserSubmitted: true, expressionName: "Lagrangian Density of the Electromagnetic Field", submittedBy: "Revan"}
 ];
